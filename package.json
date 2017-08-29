@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/qqqlllyyyy/ReactNode/issues"
   },
-  "homepage": "https://github.com/qqqlllyyyy/ReactNode#readme"
+  "homepage": "https://github.com/qqqlllyyyy/ReactNode#readme",
+  "dependencies": {
+    "express": "^4.15.4"
+  }
 }
