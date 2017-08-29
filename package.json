@@ -1,0 +1,19 @@
+{
+  "name": "react-node",
+  "version": "1.0.0",
+  "description": "A full stack project with React and Node.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qqqlllyyyy/ReactNode.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qqqlllyyyy/ReactNode/issues"
+  },
+  "homepage": "https://github.com/qqqlllyyyy/ReactNode#readme"
+}
