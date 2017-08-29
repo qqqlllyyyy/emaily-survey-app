@@ -5,6 +5,10 @@
 1. Relationship Between Node & Express
 2. Generating Our First Express App
 3. Express Route Hanlders
+4. How to Deploy the Application
+  * Deployment Checklist
+  * Actual Deployment Process
+  * Subsequent Deploys
 
 ---
 
@@ -172,4 +176,7 @@ If we go to url [https://vast-garden-42186.herokuapp.com/](https://vast-garden-4
 
 #### 4.3. Subsequent Deploys
 
-After we made some changes, 
+After we made some changes, we need to use `git add .` and `git commit -m "some message"` to commit the changes. Then run the following code to push the chagnes to Heroku server:
+```
+git push heroku master
+```
