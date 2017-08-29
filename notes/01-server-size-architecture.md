@@ -80,9 +80,9 @@ By calling `app.get()`, we are creating a brand new route handler. Express has a
 
 We'll use [Heroku](https://www.heroku.com/) to handle the deployment.
 
-#### Deployment Checklist:
+#### 4.1. Deployment Checklist
 
-**1. Dynamic Port Binding:**
+**4.1.1. Dynamic Port Binding:**
 
 Heroku tells us which port our app will use, so we need to make sure we listen to the port they tell us to.
 
@@ -99,7 +99,7 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT);
 ```
 
-**2. Specify Node Environment:**
+**4.1.2. Specify Node Environment:**
 
 We want to use a specific version of node, so we need to tell Heroku which version we want.
 
@@ -113,7 +113,7 @@ Add `"engines"` property in `'./package.json'`, remember to use double quotes.
 },
 ```
 
-**3. Specify Start Script:**
+**4.1.3. Specify Start Script:**
 
 Instruct Heroku what command to run to start our server running.
 
@@ -126,7 +126,7 @@ Modify `"scripts"` in `'./package.json'` and added a new script `"start"`:
 },
 ```
 
-**4. Create `.gitignore` File**
+**4.1.4. Create `.gitignore` File**
 
 We don't want to include dependencies, Heroku will do that for us.
 ```javascript
@@ -135,3 +135,9 @@ We don't want to include dependencies, Heroku will do that for us.
 // It tells git not to commit everything inside 'node_modules'
 node_modules
 ```
+
+#### 4.2. Actual Deployment Process
+
+![03](./images/01/01-03.png "03")
+
+By default, Heroku uses a git-based deployment procedure.
