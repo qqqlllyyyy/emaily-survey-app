@@ -82,7 +82,7 @@ We'll use [Heroku](https://www.heroku.com/) to handle the deployment.
 
 #### 4.1. Deployment Checklist
 
-**4.1.1. Dynamic Port Binding:**
+4.1.1. Dynamic Port Binding:
 
 Heroku tells us which port our app will use, so we need to make sure we listen to the port they tell us to.
 
@@ -99,7 +99,7 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT);
 ```
 
-**4.1.2. Specify Node Environment:**
+4.1.2. Specify Node Environment:
 
 We want to use a specific version of node, so we need to tell Heroku which version we want.
 
@@ -113,7 +113,7 @@ Add `"engines"` property in `'./package.json'`, remember to use double quotes.
 },
 ```
 
-**4.1.3. Specify Start Script:**
+4.1.3. Specify Start Script:
 
 Instruct Heroku what command to run to start our server running.
 
@@ -126,7 +126,7 @@ Modify `"scripts"` in `'./package.json'` and added a new script `"start"`:
 },
 ```
 
-**4.1.4. Create `.gitignore` File**
+4.1.4. Create `.gitignore` File
 
 We don't want to include dependencies, Heroku will do that for us.
 ```javascript
@@ -141,3 +141,31 @@ node_modules
 ![03](./images/01/01-03.png "03")
 
 By default, Heroku uses a git-based deployment procedure.
+
+More information about Heroku CLI here:  [https://devcenter.heroku.com/articles/heroku-cli#macos](https://devcenter.heroku.com/articles/heroku-cli#macos). We can install Heroku CLI via [Homebrew](https://brew.sh/).
+```
+brew install heroku
+heroku -v
+```
+
+Create a new Heroku app:
+```
+heroku login
+heroku create
+
+# Output: https://vast-garden-42186.herokuapp.com/ | https://git.heroku.com/vast-garden-42186.git
+```
+
+The first link above is the url of our app. The second link is our deployment target. It is a git repository that we can push our local server to.
+
+Add a remove repository to our current repository and we want to name that repository `heroku`:
+```
+git remote add heroku https://git.heroku.com/vast-garden-42186.git
+```
+
+We can then run the command to deploy our application:
+```
+git push heroku master
+```
+
+If we go to url [https://vast-garden-42186.herokuapp.com/](https://vast-garden-42186.herokuapp.com/) now, we can view our application online.
