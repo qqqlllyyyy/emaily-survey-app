@@ -136,7 +136,7 @@ We don't want to include dependencies, Heroku will do that for us.
 node_modules
 ```
 
-#### 4.2. Actual Deployment Process
+#### 4.2. First Time Deployment Process
 
 ![03](./images/01/01-03.png "03")
 
@@ -168,4 +168,8 @@ We can then run the command to deploy our application:
 git push heroku master
 ```
 
-If we go to url [https://vast-garden-42186.herokuapp.com/](https://vast-garden-42186.herokuapp.com/) now, we can view our application online.
+If we go to url [https://vast-garden-42186.herokuapp.com/](https://vast-garden-42186.herokuapp.com/) now, we can view our application online. We can also run `heroku open` to automatically open a browser and go to our application url. If you ran into some error, run `heroku logs` for trouble shooting.
+
+#### 4.3. Subsequent Deploys
+
+After we made some changes, 
