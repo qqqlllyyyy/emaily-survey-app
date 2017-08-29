@@ -9,7 +9,6 @@
     * Deployment Checklist
     * Actual Deployment Process
     * Subsequent Deploys
-5. test
 
 ---
 
