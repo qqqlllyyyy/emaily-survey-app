@@ -82,7 +82,8 @@ We'll use [Heroku](https://www.heroku.com/) to handle the deployment.
 
 ##### Deployment Checklist:
 
-##### 1. **Dynamic Port Binding:** Heroku tells us which port our app will use, so we need to make sure we listen to the port they tell us to.
+1. **Dynamic Port Binding:** Heroku tells us which port our app will use, so we need to make sure we listen to the port they tell us to.
+
 Whenever Heroku runs our application, it will inject the `env` variable. Modify our code to listen to a dynamic port:
 ```javascript
 // ./index.js
@@ -96,7 +97,8 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT);
 ```
 
-##### 2. **Specify Node Environment:** We want to use a specific version of node, so we need to tell Heroku which version we want.
+2. **Specify Node Environment:** We want to use a specific version of node, so we need to tell Heroku which version we want.
+
 Add `"engines"` property in `'./package.json'`, remember to use double quotes.
 ```javascript
 // ./package.json
@@ -106,4 +108,7 @@ Add `"engines"` property in `'./package.json'`, remember to use double quotes.
   "npm": "5.0.3"
 },
 ```
-##### 3. **Specify Start Script:** Instruct Heroku what command to run to start our server running.
+
+3. **Specify Start Script:** Instruct Heroku what command to run to start our server running.
+
+#####
