@@ -129,3 +129,9 @@ Modify `"scripts"` in `'./package.json'` and added a new script `"start"`:
 **4. Create `.gitignore` File**
 
 We don't want to include dependencies, Heroku will do that for us.
+```javascript
+// ./.gitignore
+//---------------------------------------------------------
+// It tells git not to commit everything inside 'node_modules'
+node_modules
+```
