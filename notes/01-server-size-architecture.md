@@ -1,7 +1,5 @@
 # Server Side Architecture
 
----
-
 ### 1. Relationship Between Node & Express
 
 Update NPM to version 5 and install Express:
@@ -19,14 +17,50 @@ Node will take the information from the HTTP request and give it to the Express 
 
 ---
 
-### 2. Generating Express App
+### 2. Generating Our First Express App
 
 We will create our first Express route handler. First created a new file `'./index.js'`. This is the root file for Node.
 
-Note that we use `'require'` instead of `'import'`, which is common JS module. Because at present, the NodeJS runtime only has support for common JS modules.
+Note that we use `'require'` instead of `'import'`, which is common JS module rather than ES2015 module. Because at present, the NodeJS runtime only has support for common JS modules. But we will use ES2015 modules in the client side for React.
 
 ```javascript
 // ./index.js
 // Import Express
 const express = require('express');
+
+// Create An Express Application
+// We may have several Express applications in a project.
+const app = express();
+
+// Create A Route Handler
+app.get('/', (req, res) => {
+  res.send({ hi: 'there' });
+});
+
+// Listen to port 5000
+app.listen(5000);
 ```
+
+The use of an Express application is to set up configuration that will listen for incoming requests that will be routed to the Express side from the Node side, and then route these requests to different route handlers.
+
+Run this project:
+```
+node index.js
+```
+We can view the page by entering `localhost:5000` in the browser.
+
+---
+
+### 3. Express Route Hanlders
+
+We created our first route hanlder in the last section. Let's go through it piece by piece.
+
+![02](./images/01/01-02.png "02")
+
+By calling `app.get()`, we are creating a brand new route handler. Express has access to several other methods as well:
+
+* **get:** Get info from the server
+* **post:** Send info to the server
+* **put:** Update all the properties of something
+* **delete:** Delete something
+* **patch:** Update one or two properties of something
