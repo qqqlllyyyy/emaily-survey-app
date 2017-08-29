@@ -3,12 +3,12 @@
 ### Contents
 
 1. [Relationship Between Node & Express](#user-content-1-relationship-between-node--express)
-2. Generating Our First Express App
-3. Express Route Hanlders
-4. How to Deploy the Application
-    * Deployment Checklist
-    * Actual Deployment Process
-    * Subsequent Deploys
+2. [Generating Our First Express App](#user-content-2-generating-our-first-express-app)
+3. [Express Route Hanlders](#user-content-3-express-route-hanlders)
+4. [How to Deploy the Application](#user-content-4-how-to-deploy-the-application)
+    * [Deployment Checklist](#user-content-41-deployment-checklist)
+    * [Actual Deployment Process](#user-content-42-first-time-deployment-process)
+    * [Subsequent Deploys](#user-content-43-subsequent-deploys)
 
 ---
 
