@@ -116,3 +116,16 @@ Add `"engines"` property in `'./package.json'`, remember to use double quotes.
 **3. Specify Start Script:**
 
 Instruct Heroku what command to run to start our server running.
+
+Modify `"scripts"` in `'./package.json'` and added a new script `"start"`:
+```javascript
+// ./package.json
+//---------------------------------------------------------
+"scripts": {
+  "start": "node index.js"
+},
+```
+
+**4. Create `.gitignore` File**
+
+We don't want to include dependencies, Heroku will do that for us.
