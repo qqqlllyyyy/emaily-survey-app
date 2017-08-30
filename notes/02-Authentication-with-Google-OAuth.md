@@ -142,3 +142,55 @@ https://accounts.google.com/o/oauth2/v2/auth?response_type=code&redirect_uri=htt
 We can see from the url that the user should be redirected to `http://localhost:5000/auth/google/callback`. So we need to update our 'Authorized redirect URIs':
 
 ![09](./images/02/02-09.png "09")
+
+Now if we enter the url `http://localhost:5000/auth/google`, we can see the page to grant permission.
+
+A handler for callback uri is needed:
+```javascript
+// ./index.js
+//---------------------------------------------------------
+app.get(
+  "/auth/google/callback",
+  passport.authenticate('google')
+);
+```
+
+---
+
+### 4. Access and Refresh Tokens
+
+After the user grants the permission, the second parameter when initializing `GoogleStrategy` will be executed. The parameter is `accessToken`.
+
+```javascript
+// ./index.js
+//---------------------------------------------------------
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: keys.googleClientID,
+      clientSecret: keys.googleClientSecret,
+      callbackURL: "/auth/google/callback"
+    },
+    (accessToken, refreshToken, profile, done) => {
+      console.log('access token', accessToken);
+      console.log('refresh token', refreshToken);
+      console.log('profile', profile);
+    }
+  )
+);
+```
+
+If we run `npm start` this time, we can see some data in our terminal:
+
+```javascript
+access token ya29.Glu3BH61CPKSX1hcp6bFsIoKY3gIvbwpka9Cj6deqoVwaiYyg2jBJsR5lbqUUVwhtBG5_zILiLdVXHfGYudGGhWtmPEs8p_XCKz13Yv6R2KTjiS8TUwmu66HYLJt
+refresh token undefined
+profile { id: '101194515811903038601',
+  displayName: 'Liyu Qin',
+  name: { familyName: 'Qin', givenName: 'Liyu' },
+  emails: [ { value: 'qinliyu1990@gmail.com', type: 'account' } ],
+  photos: [ { value: 'https://lh5.googleusercontent.com/-9lr1Fh-bgK8/AAAAAAAAAAI/AAAAAAAAAR4/vE7A2w5BwH4/photo.jpg?sz=50' } ],
+  gender: 'male',
+  ...
+}
+```
