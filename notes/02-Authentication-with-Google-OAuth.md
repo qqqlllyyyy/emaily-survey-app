@@ -134,3 +134,11 @@ app.get(
   })
 );
 ```
+If we try to enter `'http://localhost:5000/auth/google'` in our browser, we'll get an error: `redirect_uri_mismatch`. The url for this error is:
+```
+https://accounts.google.com/o/oauth2/v2/auth?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fauth%2Fgoogle%2Fcallback&scope=profile%20email&client_id=900103340416-ncphrm92c4m8taktob1nm9vhj0lmspso.apps.googleusercontent.com
+```
+
+We can see from the url that the user should be redirected to `http://localhost:5000/auth/google/callback`. So we need to update our 'Authorized redirect URIs':
+
+![09](./images/02/02-09.png "09")
