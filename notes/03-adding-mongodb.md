@@ -23,7 +23,7 @@ Move something out from `./index.js`:
 //---------------------------------------------------------
 // This is the initial passport module.
 // Not the one created in './services/passport.js'.
-const passport = require("../services/passport");
+const passport = require("passport");
 
 module.exports = (app) => {
   // Google OAuth

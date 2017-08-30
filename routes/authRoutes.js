@@ -1,4 +1,4 @@
-const passport = require("../services/passport");
+const passport = require("passport");
 
 module.exports = (app) => {
   // Google OAuth
