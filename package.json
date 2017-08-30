@@ -21,6 +21,8 @@
   },
   "homepage": "https://github.com/qqqlllyyyy/ReactNode#readme",
   "dependencies": {
-    "express": "^4.15.4"
+    "express": "^4.15.4",
+    "passport": "^0.4.0",
+    "passport-google-oauth20": "^1.0.0"
   }
 }
