@@ -7,6 +7,7 @@
     * What is Passport
     * Passport Setup
     * Enabling Google OAuth API
+3. Testing OAuth
 
 ---
 
@@ -114,5 +115,22 @@ passport.use(
       console.log(accessToken);
     }
   )
+);
+```
+
+---
+
+### 3. Testing OAuth
+
+First, we need to create a route handler to make sure that the user get kicked into the Passport flow.
+
+```javascript
+// ./index.js
+//---------------------------------------------------------
+app.get(
+  "/auth/google",
+  passport.authenticate('google', {
+    scope: ['profile', 'email'] // What access we want to have
+  })
 );
 ```

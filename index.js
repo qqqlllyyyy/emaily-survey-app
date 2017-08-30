@@ -5,12 +5,9 @@ const keys = require("./config/keys");
 
 const app = express();
 
-// // Route Handler
-// app.get("/", (req, res) => {
-//   res.send({ hi: "hey you~~" });
-// });
-
+//-------------------------------------------------------------------
 // Use Passport
+//-------------------------------------------------------------------
 passport.use(
   new GoogleStrategy(
     {
@@ -24,6 +21,19 @@ passport.use(
   )
 );
 
-// Listen to port
+//-------------------------------------------------------------------
+// Route Handler
+//-------------------------------------------------------------------
+// Google OAuth
+app.get(
+  "/auth/google",
+  passport.authenticate('google', {
+    scope: ['profile', 'email']
+  })
+);
+
+//-------------------------------------------------------------------
+// Listen to Port
+//-------------------------------------------------------------------
 const PORT = process.env.PORT || 5000;
 app.listen(PORT);
