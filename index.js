@@ -3,7 +3,6 @@ const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const keys = require("./config/keys");
 
-
 const app = express();
 
 //-------------------------------------------------------------------
@@ -27,6 +26,13 @@ passport.use(
 //-------------------------------------------------------------------
 // Route Handler
 //-------------------------------------------------------------------
+// Homepage
+app.get(
+  "/",
+  (req, res) => {
+    res.send({ hi: 'there' });
+  }
+);
 // Google OAuth
 app.get(
   "/auth/google",
