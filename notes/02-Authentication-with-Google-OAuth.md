@@ -2,15 +2,16 @@
 
 ### Contents
 
-1. Intro to Google OAuth
-2. Passport JS
-    * What is Passport
-    * Passport Setup
-    * Enabling Google OAuth API
-3. Testing OAuth
-4. Access and Refresh Tokens
-5. Nodemon Setup
-6. Appendix
+1. [Intro to Google OAuth](#user-content-1-google-oauth-flow)
+2. [Passport JS](#user-content-2-passport-js)
+    * [What is Passport](#user-content-21-what-is-passport)
+    * [Passport Setup](#user-content-22-passport-setup)
+    * [Enabling Google OAuth API](#user-content-23-enabling-google-oauth-api)
+    * [Securing API Keys](#user-content-24-securing-api-keys)
+3. [Testing OAuth](#user-content-3-testing-oauth)
+4. [Access and Refresh Tokens](#user-content-4-access-and-refresh-tokens)
+5. [Nodemon Setup](#user-content-5-nodemon-setup)
+6. [Appendix](#user-content-6-appendix)
 
 ---
 
@@ -226,7 +227,7 @@ npm run dev
 
 ---
 
-6. Appendix
+### 6. Appendix
 
 To sum up, here is the complete code of `'./index.js'` so far:
 
