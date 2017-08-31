@@ -178,4 +178,51 @@ Let's create a model class using Mongoose, which will allow us to create a new c
 //---------------------------------------------------------
 const mongoose = require('mongoose');
 const { Schema } = mongoose; // ES2015 version of: const Schema = mongoose.Schema;
+// Define a schema, what records will look like
+const userSchema = new Schema({
+  googleId: String // Define the type, 'Number' is another option.
+});
+// First parameter is the name of the collection.
+mongoose.model('users', userSchema);
+```
+
+Then import it in `./index.js`:
+```javascript
+// ./index.js
+//---------------------------------------------------------
+require("./models/User");
+```
+
+#### 4.2. Saving Model Instances
+
+Remember we have a callback function after OAuth procedure in `'./services/passport.js'` and a parameter `'profile'` which contains a Google ID.
+```javascript
+// ./services/passport.js
+//---------------------------------------------------------
+// Make sure we get access to the database
+const mongoose = require('mongoose');
+// Get access to the database collection 'user'.
+const User = mongoose.model("users");
+```
+
+We also used the function `mongoose.model("users", userSchema);` in `'./models/User.js'`. If we pass in two parameters, we will create a collection with a schema. If we use only one parameter, we will pull the model out of Mongoose.
+
+After we have the model class `User`, we can create a new model instance using that model class, and save it to the database.
+```javascript
+// ./services/passport.js
+//---------------------------------------------------------
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: keys.googleClientID,
+      clientSecret: keys.googleClientSecret,
+      callbackURL: "/auth/google/callback"
+    },
+    (accessToken, refreshToken, profile, done) => {
+      // Creates a new instance of the user.
+      // Not saved to database yet if we forget '.save()'
+      new User({ googleId: profile.id }).save();
+    }
+  )
+);
 ```
