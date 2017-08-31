@@ -3,6 +3,7 @@
 ### Contents
 
 1. Server Structure Refactor
+2. The Theory of Authentication
 
 
 ---
@@ -85,3 +86,13 @@ authRoutes(app);
 const app = express();
 require("./routes/authRoutes")(app);
 ```
+
+---
+
+### 2. The Theory of Authentication
+
+After getting the accessToken from Google, let's figure out what it really means to authenticate the user.
+
+We communicate between our browser and our Express by HTTP request.
+
+![01](./images/03/03-01.png "01")
