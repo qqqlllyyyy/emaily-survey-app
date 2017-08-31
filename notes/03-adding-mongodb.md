@@ -73,6 +73,7 @@ const app = express();
 authRoutes(app);
 ```
 
+
 Actually, we can ignore the variable `authRoutes` and simplify `./index.js`:
 ```javascript
 // ./index.js
