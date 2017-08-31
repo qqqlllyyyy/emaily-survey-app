@@ -160,3 +160,22 @@ const keys = require('./config/keys');
 // Pass the address in, the address is in mlab console. Save it to ./config/keys.js for security.
 mongoose.connect(keys.mongoURI);
 ```
+Now we installed MongoDB and Mongoose. What to do next:
+
+* Need to be able to identify users who sign up and return to our application. We want to save the 'id' in their google profile.
+* Use Mongoose to create a new collection in Mongo called `'users'`.
+* When user signs in, save new record to the `'users'` collection.
+
+---
+
+### 4. Working with Mongoose
+
+#### 4.1. Mongoose Model Classes
+
+Let's create a model class using Mongoose, which will allow us to create a new collection in MongoDB. We want to find a suitable location to do that: `./models/`. This directory will contain all the models that we created using Mongoose.
+```javascript
+// ./models/User.js
+//---------------------------------------------------------
+const mongoose = require('mongoose');
+const { Schema } = mongoose; // ES2015 version of: const Schema = mongoose.Schema;
+```
