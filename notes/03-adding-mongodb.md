@@ -111,3 +111,24 @@ The user will sign up first and sign out. He will sign in sometime in the future
 Remember we can get his Google profile when he signed up or signed in. We need to find some unique identifying token in the user's Google profile. Is that consistent between logins? Use that to decide if the user is the same. `id` from Google's profile is a good pick. That is the unique ID for this particular user, which will never change over time.
 
 ![02](./images/03/03-02.png "02")
+
+The whole OAuth purpose is to give us the Google ID, we just care about the ID. The critical part for identifying the user is the MongoDB. We'll set it up later.
+
+---
+
+### 3. MongoDB Setup
+
+Our Express server will communicate with MongoDB to save or pull out records. We will use a library called `mongoose.js`. It wrapped up a lot of operations and will make our lives easier.
+
+![03](./images/03/03-03.png "03")
+
+MongoDB internally stores records into different collections. Every single record is a JSON object. One of the important defining characteristics of MongoDB is `schemaless`. Every record can have its own distinct properties.
+
+![04](./images/03/03-04.png "04")
+
+What Mongoose will do for us? MongoDB has its own structure as we described above. To represent the type of structure in the JavaScript world, we have two important concepts implemented by Mongoose.
+
+* Model Class: a model class represents an entire MongoDB collection.
+* Model Instance: a JavaScript object that represents a single record sitting inside a collection.
+
+![05](./images/03/03-05.png "05")
