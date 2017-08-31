@@ -94,6 +94,8 @@ require("./routes/authRoutes")(app);
 
 After getting the accessToken from Google, let's figure out what it really means to authenticate the user.
 
-We communicate between our browser and our Express by HTTP request.
+We communicate between our browser and our Express by HTTP request. By default, information btw requests are not shared. The token is the proof that we are the right person who made the original request. We are going to use cookie-based authentication.
 
 ![01](./images/03/03-01.png "01")
+
+When we made the initial request, the response will have a header `'Set-Cookie'`, with the value which can uniquely identify the user. The browser will then store it in the browser's memory. The cookie will be automatically appended to any following request to the server.
