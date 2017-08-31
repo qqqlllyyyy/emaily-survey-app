@@ -118,6 +118,8 @@ The whole OAuth purpose is to give us the Google ID, we just care about the ID. 
 
 ### 3. MongoDB Setup
 
+#### 3.1. Introduction to MongoDB
+
 Our Express server will communicate with MongoDB to save or pull out records. We will use a library called `mongoose.js`. It wrapped up a lot of operations and will make our lives easier.
 
 ![03](./images/03/03-03.png "03")
@@ -132,3 +134,29 @@ What Mongoose will do for us? MongoDB has its own structure as we described abov
 * Model Instance: a JavaScript object that represents a single record sitting inside a collection.
 
 ![05](./images/03/03-05.png "05")
+
+#### 3.2. Setup MongoDB and Wire It Up with Express
+
+We can remotely hosted MongoDB using a third-party service called [mlab](https://mlab.com/), which is much easier. Just create an account and create a new deployment with AWS as the cloud provider
+
+![06](./images/03/03-06.png "06")
+
+After creating a new database, we need a new database user (not an application user). Go to database console and open `User` tab to create one.
+
+![07](./images/03/03-07.png "07")
+
+#### 3.3. Connecting Mongoose to MongoDB
+
+Install Mongoose locally:
+```
+npm install --save mongoose
+```
+Import mongoose it to `./index.js` and connect it to the MongoDB we just created:
+```javascript
+// ./index.js
+//---------------------------------------------------------
+const mongoose = require('mongoose');
+const keys = require('./config/keys');
+// Pass the address in, the address is in mlab console. Save it to ./config/keys.js for security.
+mongoose.connect(keys.mongoURI);
+```

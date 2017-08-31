@@ -1,8 +1,16 @@
 const express = require("express");
+const mongoose = require("mongoose");
+const keys = require("./config/keys");
+
 require("./services/passport");
+
+//-------------------------------------------------------------------
+// Connect to MongoDB
+//-------------------------------------------------------------------
+mongoose.connect(keys.mongoURI);
+
 // This is a function that takes our 'app' and attach two routes to it.
 const authRoutes = require("./routes/authRoutes");
-
 const app = express();
 authRoutes(app);
 
@@ -10,12 +18,9 @@ authRoutes(app);
 // Route Handler
 //-------------------------------------------------------------------
 // Homepage
-app.get(
-  "/",
-  (req, res) => {
-    res.send({ hi: 'there' });
-  }
-);
+app.get("/", (req, res) => {
+  res.send({ hi: "there" });
+});
 
 //-------------------------------------------------------------------
 // Listen to Port
