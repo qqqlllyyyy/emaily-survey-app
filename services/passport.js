@@ -18,9 +18,20 @@ passport.use(
       callbackURL: "/auth/google/callback"
     },
     (accessToken, refreshToken, profile, done) => {
-      // Creates a new instance of the user.
-      // Not saved to database yet if we forget '.save()'
-      new User({ googleId: profile.id }).save();
+      // Try to find a user with current id. Return a promise
+      User.findOne({ googleId: profile.id }).then(existingUser => {
+        if (existingUser) {
+          // We already have a record with the given id.
+          // The first argument is an error object. The second argument is the user record.
+          done(null, existingUser);
+        } else {
+          // We want to create a new user.
+          // Not saved to database yet if we forget '.save()'
+          new User({ googleId: profile.id })
+            .save()
+            .then(user => done(null, user)); // 'user' is the user just saved.
+        }
+      });
     }
   )
 );

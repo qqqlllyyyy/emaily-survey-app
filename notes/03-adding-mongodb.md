@@ -226,3 +226,68 @@ passport.use(
   )
 );
 ```
+
+Test with our database: run `npm run dev` and go to [http://localhost:5000/auth/google](http://localhost:5000/auth/google). A record will be created in our database in mlab console:
+
+![08](./images/03/03-08.png "08")
+
+#### 4.3. Mongoose Queries
+
+If we signed up twice, we will have two records with the same Google ID. We need to update the code to skip user creation if the ID already exists.
+
+Mongoose queries will return promises, we need `.then()` to resolve it.
+```javascript
+// ./services/passport.js
+//---------------------------------------------------------
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: keys.googleClientID,
+      clientSecret: keys.googleClientSecret,
+      callbackURL: "/auth/google/callback"
+    },
+    (accessToken, refreshToken, profile, done) => {
+      // Try to find a user with current id. Return a promise
+      User.findOne({ googleId: profile.id }).then(existingUser => {
+        if (existingUser) {
+          // We already have a record with the given id.
+        } else {
+          // We want to create a new user.
+          // Not saved to database yet if we forget '.save()'
+          new User({ googleId: profile.id }).save();
+        }
+      });
+    }
+  )
+);
+```
+
+After creating a user record or skipping user creation, we need to call a function `done()` to tell `passport` that we have finished creating a user and that it should now resume the auth process. The first argument for `done()` is an error object. The second argument is the user record.
+
+```javascript
+// ./services/passport.js
+//---------------------------------------------------------
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: keys.googleClientID,
+      clientSecret: keys.googleClientSecret,
+      callbackURL: "/auth/google/callback"
+    },
+    (accessToken, refreshToken, profile, done) => {
+      // Try to find a user with current id. Return a promise
+      User.findOne({ googleId: profile.id }).then(existingUser => {
+        if (existingUser) {
+          // The first argument is an error object. The second argument is the user record.
+          done(null, existingUser);
+        } else {
+          // `save()` is an async call.
+          new User({ googleId: profile.id })
+            .save()
+            .then(user => done(null, user)); // 'user' is the user just saved.
+        }
+      });
+    }
+  )
+);
+```
