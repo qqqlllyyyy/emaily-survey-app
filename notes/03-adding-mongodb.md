@@ -3,7 +3,9 @@
 ### Contents
 
 1. Server Structure Refactor
-2. The Theory of Authentication
+2. Sign In Users with OAuth
+    * Theory of Authentication
+    * High-level Overview of the Process
 
 
 ---
@@ -90,7 +92,9 @@ require("./routes/authRoutes")(app);
 
 ---
 
-### 2. The Theory of Authentication
+### 2. Sign In Users with OAuth
+
+#### 2.1. Theory of Authentication
 
 After getting the accessToken from Google, let's figure out what it really means to authenticate the user.
 
@@ -99,3 +103,11 @@ We communicate between our browser and our Express by HTTP request. By default, 
 ![01](./images/03/03-01.png "01")
 
 When we made the initial request, the response will have a header `'Set-Cookie'`, with the value which can uniquely identify the user. The browser will then store it in the browser's memory. The cookie will be automatically appended to any following request to the server.
+
+#### 2.2. High-level Overview of the Process
+
+The user will sign up first and sign out. He will sign in sometime in the future with the same email and password.
+
+Remember we can get his Google profile when he signed up or signed in. We need to find some unique identifying token in the user's Google profile. Is that consistent between logins? Use that to decide if the user is the same. `id` from Google's profile is a good pick. That is the unique ID for this particular user, which will never change over time.
+
+![02](./images/03/03-02.png "02")
