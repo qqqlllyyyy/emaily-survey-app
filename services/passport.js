@@ -10,6 +10,29 @@ const keys = require("../config/keys");
 // Get access to the database, 'user' collection.
 const User = mongoose.model("users");
 
+//-------------------------------------------------------------------
+// 'serializeUser' & 'deserializeUser'
+//-------------------------------------------------------------------
+passport.serializeUser((user, done) => {
+  // First argument is a `User` model
+  /**
+   * @param error object
+   * @param info to identify the user
+   */
+  // 'user.id' here is not the profile id from Google. It is the '_id' from the MongoDB record.
+  // The reason not to use Google id is that we may implement Facebook OAuth in the future.
+  done(null, user.id);
+});
+passport.deserializeUser((id, done) => {
+  // Search for a record
+  User.findById(id).then(user => {
+    done(null, user);
+  });
+});
+
+//-------------------------------------------------------------------
+// Google OAuth
+//-------------------------------------------------------------------
 passport.use(
   new GoogleStrategy(
     {

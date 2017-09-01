@@ -2,10 +2,22 @@
 
 ### Contents
 
-1. Server Structure Refactor
-2. Sign In Users with OAuth
-    * Theory of Authentication
-    * High-level Overview of the Process
+1. [Server Structure Refactor](#user-content-1-server-structure-refactor)
+2. [Sign In Users with OAuth](#user-content-2-sign-in-users-with-oauth)
+    * [Theory of Authentication](#user-content-21-theory-of-authentication)
+    * [High-level Overview of the Process](#user-content-22-high-level-overview-of-the-process)
+3. [MongoDB Setup](#user-content-3-mongodb-setup)
+    * [Introduction to MongoDB](#31-introduction-to-mongodb)
+    * [Setup MongoDB and Wire It Up with Express](#32-setup-mongodb-and-wire-it-up-with-express)
+    * [Connecting Mongoose to MongoDB](#user-content-33-connecting-mongoose-to-mongodb)
+4. [Working with Mongoose](#user-content-4-working-with-mongoose)
+    * [Mongoose Model Classes](#user-content-41-mongoose-model-classes)
+    * [Saving Model Instances](#user-content-42-saving-model-instances)
+    * [Mongoose Queries](#user-content-43-mongoose-queries)
+5. [Finishing up with Authentication](#)
+    * [Encoding Users](#)
+    * [Enabling Cookies](#)
+    * [Testing Authentication](#)
 
 
 ---
@@ -290,4 +302,91 @@ passport.use(
     }
   )
 );
+```
+
+---
+
+### 5. Finishing up with Authentication
+
+#### 5.1. Encoding Users
+
+We're almost done with the authentication process, but still need to get cookies done.
+
+![09](./images/03/03-09.png "09")
+
+To generate token, which is the identifying information, we define a function `serializeUser()`. The function will be called by `User` model.
+
+When the user wants to make another request, the cookie will be automatically added in the request by the browser. `passport` will take that cookie and pass it in another function named `deserializeUser()` defined by us, in which we'll take that identifying information and turn it back into a `User` model.
+
+```javascript
+// ./services/passport.js
+//---------------------------------------------------------
+// Before this step, we just fetched a user model from database or created a new one.
+passport.serializeUser((user, done) => { // First argument is a `User` model
+  /**
+   * @param error object
+   * @param info to identify the user
+   */
+  // 'user.id' here is not the profile id from Google. It is the '_id' from the MongoDB record.
+  // The reason not to use Google id is that we may implement Facebook OAuth in the future.
+  done(null, user.id);
+});
+passport.deserializeUser((id, done) => {
+  // Search for a record
+  User.findById(id)
+    .then(user => {
+      done(null, user);
+    });
+});
+```
+
+OAuth's only purpose is to allow someone to sign in. After that, we use our own internal ID's:
+
+![10](./images/03/03-10.png "10")
+
+#### 5.2. Enabling Cookies
+
+Now we have `serializeUser()` and `deserializeUser()`. Lastly, we need to tell `passport` to handle the authentication process with cookies.
+
+Install a new library `cookie-session` to manage cookies in our application:
+```
+npm install --save cookie-session
+```
+Import related libraries in `./index.js`. Remember to add these code before adding routes to `app`: `authRoutes(app);`.
+```javascript
+// ./index.js
+//---------------------------------------------------------
+const cookieSession = require("cookie-session");
+const passport = require("passport");
+// Enable Cookie-based Authentication
+app.use(
+  /**
+   * @param how long the cookie can exist in the browser
+   * @param keys to encrypt our cookie, define it in './config/keys.js'
+   */
+  cookieSession({
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days, unit is ms
+    keys: [keys.cookieKey], // this must be an array
+  })
+);
+// Tell Passport to Make Use of Cookie
+app.use(passport.initialize());
+app.use(passport.session());
+```
+
+#### 5.3. Testing Authentication
+
+Here is the flow that will occur any time a user makes a request:
+
+![11](./images/03/03-11.png "11")
+
+We can make another route handler to test the authentication result. Remember that the user model will be appended to `req` as `req.user`.
+
+If we sign in again and go to [http://localhost:5000/api/current_user](http://localhost:5000/api/current_user), we can see the user model appeared in our browser:
+```
+{
+  "_id": "59a899d98755cc2c5ee11a2f",
+  "googleId": "101194515811903038601",
+  "__v": 0
+}
 ```
