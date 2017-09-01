@@ -2,10 +2,10 @@
 
 ### Contents
 
-1. [Dev vs Prod Keys](#)
-2. [Determining Environment](#)
-3. [Heroku Env Variables](#)
-4. [Fixing Heroku Proxy Issues](#)
+1. [Dev vs Prod Keys](#user-content-1-dev-vs-prod-keys)
+2. [Determining Environment](#user-content-2-determining-environment)
+3. [Heroku Env Variables](#user-content-3-heroku-env-variables)
+4. [Fixing Heroku Proxy Issues](#user-content-4-fixing-heroku-proxy-issues)
 
 
 ---

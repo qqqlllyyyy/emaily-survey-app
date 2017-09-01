@@ -47,3 +47,12 @@ A full stack project with React and Node.
     * Encoding Users
     * Enabling Cookies
     * Testing Authentication
+
+### Part IV. [Dev vs Prod Environments](notes/04-dev-vs-prod-environments.md)
+
+1. Dev vs Prod Keys
+2. Determining Environment
+3. Heroku Env Variables
+4. Fixing Heroku Proxy Issues
+
+### Part V. [Moving to the Client Side](notes/05-moving-to-the-client-side.md)
