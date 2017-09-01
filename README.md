@@ -6,7 +6,7 @@ A full stack project with React and Node.
 
 ## Contents
 
-#### Part I. Server Side Architecture
+### Part I. [Server Side Architecture](./notes/01-server-side-architecture.md)
 
 1. Relationship Between Node & Express
 2. Generating Our First Express App
@@ -16,7 +16,7 @@ A full stack project with React and Node.
     * Actual Deployment Process
     * Subsequent Deploys
 
-#### Part II. Authentication with Google OAuth
+### Part II. Authentication with Google OAuth
 
 1. Intro to Google OAuth
 2. Passport JS
