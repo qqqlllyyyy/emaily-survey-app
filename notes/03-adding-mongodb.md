@@ -14,10 +14,10 @@
     * [Mongoose Model Classes](#user-content-41-mongoose-model-classes)
     * [Saving Model Instances](#user-content-42-saving-model-instances)
     * [Mongoose Queries](#user-content-43-mongoose-queries)
-5. [Finishing up with Authentication](#)
-    * [Encoding Users](#)
-    * [Enabling Cookies](#)
-    * [Testing Authentication](#)
+5. [Finishing up with Authentication](#user-content-5-finishing-up-with-authentication)
+    * [Encoding Users](#user-content-51-encoding-users)
+    * [Enabling Cookies](#user-content-52-enabling-cookies)
+    * [Testing Authentication](#user-content-53-testing-authentication)
 
 
 ---
