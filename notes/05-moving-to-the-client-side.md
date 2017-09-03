@@ -105,6 +105,22 @@ We can imaging that there are two distinct layers in our application. When we ne
 
 That is actually what we did with `./client/package.json` before.
 
+However, we just want the proxy to work in the development mode, we don't want to go to `http://xxx.herokuapp.com:5000` when clicking the button. The proxy will automatically correct everything for us.
+
+The reason is that in production, the `create-react-app` server does not even exist.
+
+![07](./images/05/05-07.png "07")
+
+In production, before we deploy our app, we'll build our React project. `create-react-app` will take all the `js` and `css` files and run `webpack` & `babel` over all these files. It will generate a final production build of our application and save it into `./client/public/`.
+
+Thus when a user comes our app, only Express API will run. We'll only send the client an HTML file, and the newly built javascript file in `./client/public/`. We can easily test it:
+
+```
+cd client
+npm run build
+```
+
+![08](./images/05/05-08.png "08")
 
 
 
