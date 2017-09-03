@@ -129,16 +129,18 @@ npm run build
 
 In this section, we'll talk about why we made some decisions we just did.
 
-#### 4.1. Why Don't We Separate the Client & Express Server?
-
-Why don't we use the structure in the following image? We can separate the backend API on a different domain.
+Why don't we use the structure in the following image in our development environment? We can separate the backend API on a different domain.
 
 ![09](./images/05/05-09.png "09")
 
-Because the one listed above may have some issues:
+Because the one listed above may have some issues, which will make life harder:
 
 The cookies is the only info used to authenticate the user. Cookies will only be included when making request to Express server because the browser is pointing to `http://localhost:3000`. This is a security issue. When making requests to a different domain, the browser assumes that it might have loaded some malicious js code that is attempting to make a request maliciously to some different domain. So it will not include the cookies.
 
 ![10](./images/05/05-10.png "10")
 
-Our solution is better: Any API requests will always be pointed to the `create-react-app` server, and `create-react-app` will proxy that request onto the Express API. The browser doesn't know that the proxy is there.
+Our solution is better: Any API requests will always be pointed to the `create-react-app` server, and `create-react-app` will proxy that request onto the Express API. The browser doesn't know that the proxy is there. So we can get the cookies in Express server.
+
+Another big issue is `CORS` request. When we are going to send a request to a different domain/port, that is called a `CORS` (cross origin resource sharing) request.
+
+![11](./images/05/05-11.png "11")
