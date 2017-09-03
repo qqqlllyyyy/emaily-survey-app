@@ -5,6 +5,7 @@
 1. [React App Generation](#)
 2. [Running the Client and Server](#)
 3. [Routing Stumbling Block](#)
+4. [Why This Architecture (Optional)](#)
 
 
 ---
@@ -105,7 +106,7 @@ We can imaging that there are two distinct layers in our application. When we ne
 
 That is actually what we did with `./client/package.json` before.
 
-However, we just want the proxy to work in the development mode, we don't want to go to `http://xxx.herokuapp.com:5000` when clicking the button. The proxy will automatically correct everything for us.
+However, we just want the proxy to work in the development mode, we don't want to go to `http://xxx.herokuapp.com:5000` when clicking the button. The proxy will automatically correct everything for us. It works perfectly between development and production.
 
 The reason is that in production, the `create-react-app` server does not even exist.
 
@@ -113,7 +114,7 @@ The reason is that in production, the `create-react-app` server does not even ex
 
 In production, before we deploy our app, we'll build our React project. `create-react-app` will take all the `js` and `css` files and run `webpack` & `babel` over all these files. It will generate a final production build of our application and save it into `./client/public/`.
 
-Thus when a user comes our app, only Express API will run. We'll only send the client an HTML file, and the newly built javascript file in `./client/public/`. We can easily test it:
+Thus when a user comes our app, only Express API will run. We'll only send the client an HTML file, and the newly built javascript file in `./client/public/build`. We can easily test it:
 
 ```
 cd client
@@ -122,9 +123,22 @@ npm run build
 
 ![08](./images/05/05-08.png "08")
 
+---
 
+### 4. Why This Architecture (Optional)
 
+In this section, we'll talk about why we made some decisions we just did.
 
+#### 4.1. Why Don't We Separate the Client & Express Server?
 
+Why don't we use the structure in the following image? We can separate the backend API on a different domain.
 
-Let's talk about the beauty of creating React app's proxy.
+![09](./images/05/05-09.png "09")
+
+Because the one listed above may have some issues:
+
+The cookies is the only info used to authenticate the user. Cookies will only be included when making request to Express server because the browser is pointing to `http://localhost:3000`. This is a security issue. When making requests to a different domain, the browser assumes that it might have loaded some malicious js code that is attempting to make a request maliciously to some different domain. So it will not include the cookies.
+
+![10](./images/05/05-10.png "10")
+
+Our solution is better: Any API requests will always be pointed to the `create-react-app` server, and `create-react-app` will proxy that request onto the Express API. The browser doesn't know that the proxy is there.
