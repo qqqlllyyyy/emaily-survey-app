@@ -89,3 +89,26 @@ To make the relative path work, we will add a new configuration in `./client/pac
   ...
 }
 ```
+After setting up the proxy, we'll still get an error page if we click the button:
+
+![04](./images/05/05-04.png "04")
+
+We need to go to the url provided in this error message and added a new `'Authorized redirect URI'` for our dev app:
+
+![05](./images/05/05-05.png "05")
+
+Now everything works fine. Let's discuss what's really going on here, and the beauty of creating React app's proxy.
+
+We can imaging that there are two distinct layers in our application. When we need some data from API, the request is going to go to the `create-react-app` server, to a proxy that is automatically built-in and included with `create-react-app` server. That proxy will take that request and forward it on to Express API:
+
+![06](./images/05/05-06.png "06")
+
+That is actually what we did with `./client/package.json` before.
+
+
+
+
+
+
+
+Let's talk about the beauty of creating React app's proxy.
