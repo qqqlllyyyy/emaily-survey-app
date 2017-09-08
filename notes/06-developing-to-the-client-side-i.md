@@ -6,10 +6,10 @@
 2. [Client Setup](#user-content-2-client-setup)
     * [Route Structures](#user-content-21-route-structures)
     * [React Setup](#user-content-22-react-setup)
-    * [Redux Review](#)
-    * [Redux Setup](#)
-    * [The Auth Reducer](#)
-3. [Why We Care About Auth](#)
+    * [Redux Review](#user-content-23-redux-review)
+    * [Redux Setup](#user-content-24-redux-setup)
+    * [The Auth Reducer](#user-content-25-the-auth-reducer)
+3. [Why We Care About Auth](#user-content-3-why-we-care-about-auth)
 
 ---
 

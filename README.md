@@ -64,4 +64,15 @@ A full stack project with React and Node.
     * Can We Separate the Client & Express Server
     * How Proxy Really Works
 
-### Part VI. [Developing the Client Side](notes/06-developing-to-the-client-side.md)
+### Part VI. [Developing the Client Side - I](notes/06-developing-to-the-client-side-i.md)
+
+1. Async/Await Syntax
+2. Client Setup
+    * Route Structures
+    * React Setup
+    * Redux Review
+    * Redux Setup
+    * The Auth Reducer
+3. Why We Care About Auth
+
+### Part VII. [Developing the Client Side - II](notes/07-developing-to-the-client-side-ii.md)
