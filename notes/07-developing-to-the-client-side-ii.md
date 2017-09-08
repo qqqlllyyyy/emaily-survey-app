@@ -5,10 +5,12 @@
 1. [React Router Setup](#user-content-1-react-router-setup)
     * [Basic Usage of React Router](#user-content-11-basic-usage-of-react-router)
     * [Always Visible Components](#user-content-12-always-visible-components)
-2. [Header Component Implementation](#)
-    * [Separate Header Component Out](#)
-    * [Materialize CSS](#)
-    * [Header Design](#)
+2. [Header Component Implementation](#user-content-2-header-component-implementation)
+    * [Separate Header Component Out](#user-content-21-separate-header-component-out)
+    * [Materialize CSS with Webpack](#user-content-22-materialize-css-with-webpack)
+    * [Header Design](#user-content-23-header-design)
+3. [Communication between React and Server](#)
+    * [Current User API](#)
 
 ---
 
@@ -186,3 +188,45 @@ class Header extends Component {
 Our application header looks better:
 
 ![03](./images/07/07-03.png "03")
+
+Added a container class to the outside div:
+```javascript
+// ./client/src/components/App.js
+//---------------------------------------------------------
+const App = () => {
+  return (
+    <div className="container">
+      ...
+  );
+};
+```
+---
+
+### 3. Communication between React and Server
+
+#### 3.1. Current User API
+
+Header component should display different content if a user is logged in or not logged in. Remember we have a route in our Express server file `./routes/authRoutes.js`:
+
+If a user is logged in, the route `/api/current_user` will response with the user signed in. This is the way to figure out whether a user is signed in.
+
+When the application boosts up, we'll make a request to the route `/api/current_user` to see whether or not the user is logged in.
+
+Here is diagram of how to communicate between our React app and the server side:
+
+![04](./images/07/07-04.png "04")
+
+So we need to make an action creator that makes a request over to the route handler on our server.
+
+#### 3.2. Additional Proxy Rules
+
+Here is a diagram of how to figure out whether a user is signed in:
+
+1. When React app started, the App component should call an action creator.
+2. The action creator should make an ajax request to the backend asking whether or not a user is logged in.
+3. The action creator has a name `'fetchUser'`, we'll use `axios` to make the request.
+4. Once we get the request back, we'll use a library `'redux-thunk'` to dispatch an action off to all the different reducers in our app.
+5. Our `authReducer` will look at that action and update the state.
+6. Update `Header` component based on the new state.
+
+![05](./images/07/07-05.png "05")

@@ -14,7 +14,7 @@ const Landing = () => <h2>Landing</h2>;
 // Note that 'BrowserRouter' expects to have at most one child. So we need a 'div' in it.
 const App = () => {
   return (
-    <div>
+    <div className="container">
       <BrowserRouter>
         <div>
           {/* Header will always be displayed */}
