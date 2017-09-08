@@ -6,6 +6,8 @@
 2. [Running the Client and Server](#user-content-2-running-the-client-and-server)
 3. [Routing Stumbling Block](#user-content-3-routing-stumbling-block)
 4. [Why This Architecture (Optional)](#user-content-4-why-this-architecture-optional)
+    * [Can We Separate the Client & Express Server](#user-content-41-can-we-separate-the-client--express-server)
+    * [How Proxy Really Works](#user-content-42-how-proxy-really-works)
 
 
 ---

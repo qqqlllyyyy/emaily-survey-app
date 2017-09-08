@@ -56,3 +56,12 @@ A full stack project with React and Node.
 4. Fixing Heroku Proxy Issues
 
 ### Part V. [Moving to the Client Side](notes/05-moving-to-the-client-side.md)
+
+1. React App Generation
+2. Running the Client and Server
+3. Routing Stumbling Block
+4. Why This Architecture (Optional)
+    * Can We Separate the Client & Express Server
+    * How Proxy Really Works
+
+### Part VI. [Developing the Client Side](notes/06-developing-to-the-client-side.md)
