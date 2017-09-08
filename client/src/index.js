@@ -1,8 +1,7 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import registerServiceWorker from './registerServiceWorker';
-
-ReactDOM.render(<App />, document.getElementById('root'));
-registerServiceWorker();
+import React from "react";
+import ReactDOM from "react-dom";
+/**
+ * @param Root component
+ * @param Where we're going to render the component to inside our dom
+ */
+ReactDom.render();
