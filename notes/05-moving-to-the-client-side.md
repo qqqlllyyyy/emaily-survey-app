@@ -2,10 +2,10 @@
 
 ### Contents
 
-1. [React App Generation](#)
-2. [Running the Client and Server](#)
-3. [Routing Stumbling Block](#)
-4. [Why This Architecture (Optional)](#)
+1. [React App Generation](#user-content-1-react-app-generation)
+2. [Running the Client and Server](#user-content-2-running-the-client-and-server)
+3. [Routing Stumbling Block](#user-content-3-routing-stumbling-block)
+4. [Why This Architecture (Optional)](#user-content-4-why-this-architecture-optional)
 
 
 ---
@@ -129,6 +129,8 @@ npm run build
 
 In this section, we'll talk about why we made some decisions we just did.
 
+#### 4.1. Can We Separate the Client & Express Server
+
 Why don't we use the structure in the following image in our development environment? We can separate the backend API on a different domain.
 
 ![09](./images/05/05-09.png "09")
@@ -144,3 +146,9 @@ Our solution is better: Any API requests will always be pointed to the `create-r
 Another big issue is `CORS` request. When we are going to send a request to a different domain/port, that is called a `CORS` (cross origin resource sharing) request.
 
 ![11](./images/05/05-11.png "11")
+
+#### 4.2. How Proxy Really Works
+
+To understand deeply how proxy is working with Express API, we'll walk through the dev mode and the production mode.
+
+Here is a diagram for dev mode:
