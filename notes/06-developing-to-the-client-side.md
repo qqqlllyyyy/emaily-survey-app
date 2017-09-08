@@ -2,10 +2,10 @@
 
 ### Contents
 
-1. [Async/Await Syntax](#)
-2. [Client Setup](#)
-    * [Route Structures](#)
-    * [React Setup](#)
+1. [Async/Await Syntax](#user-content-1-asyncawait-syntax)
+2. [Client Setup](#user-content-2-client-setup)
+    * [Route Structures](#user-content-21-route-structures)
+    * [React Setup](#user-content-22-react-setup)
 
 ---
 
@@ -138,3 +138,60 @@ ReactDom.render();
 Make a folder to store all the components in our application: `./client/src/components/` and create a new file `./client/src/components/App.js`.
 
 If a given file is exporting a class or a component, we'll label it with a capital letter.
+
+```javascript
+// ./client/src/components/App.js
+//---------------------------------------------------------
+import React from 'react';
+const App = () => {
+  return (
+    <div>
+      <h3>Hi there!</h3>
+    </div>
+  );
+};
+export default App;
+```
+
+Then import the component `App` to `./client/src/index.js` and make sure we can display it on the screen. Note that everything will be displayed in a div with id root in `./client/public/index.html`.
+```javascript
+// ./client/src/index.js
+//---------------------------------------------------------
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './components/App';
+/**
+ * @param Root component
+ * @param Where we're going to render the component to inside our dom
+ */
+ReactDom.render(
+  <App />,
+  document.querySelector('#root')
+);
+```
+
+We can then test the client side:
+
+```
+cd ..
+npm run dev
+```
+
+#### 2.3. Redux Setup
+
+The Redux is all about holding all the state (data) in our application.
+
+![07](./images/06/06-07.png "07")
+
+Here is how Redux works behind the screen:
+
+1. At the very top we have a `redux store`, which is where all of our state exists.
+2. To determine our current state or to change our state, we call an `action creator` which dispatches an action.
+3. The action is sent to all the different `reducers`.
+4. Those reducers are combined together with the `combineReducers` and that is used to update the state in our redux store.
+
+![08](./images/06/06-08.png "08")
+
+Another diagram explaining the process can be viewed here:
+
+![09](./images/06/06-09.png "09")
