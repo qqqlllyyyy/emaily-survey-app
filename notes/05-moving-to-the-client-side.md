@@ -151,10 +151,12 @@ Another big issue is `CORS` request. When we are going to send a request to a di
 
 To understand deeply how proxy is working with Express API, we'll walk through the dev mode and the production mode.
 
-Here is a diagram for dev mode:
+Here is a diagram for development flow:
 
 ![12](./images/05/05-12.png "12")
 
-![13](./images/05/05-13.png "13")
-
 If we have a setting for '/auth/google', the proxy will copy the request and send it to the new route.
+
+Here is the diagram for the production flow, it's much more simple:
+
+![13](./images/05/05-13.png "13")
