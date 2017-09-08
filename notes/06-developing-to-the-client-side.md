@@ -1,4 +1,4 @@
-# Developing the Client Side
+# Developing the Client Side - I
 
 ### Contents
 
@@ -9,6 +9,7 @@
     * [Redux Review](#)
     * [Redux Setup](#)
     * [The Auth Reducer](#)
+3. [Why We Care About Auth](#)
 
 ---
 
@@ -235,9 +236,67 @@ ReactDOM.render(
 
 #### 2.5. The Auth Reducer
 
-In this section we'll create one reducer that will be used in our redux store. Then import it in the `./client/src/index.js` and pass it in as an argument of the `createStore()`. Remember from the diagram, we want to have two reducers: `authReducer` and `surveysReducer`.
+In this section we'll create one reducer that will be used in our redux store. Then import it in the `./client/src/reducers/index.js` and pass it in as an argument of the `createStore()`. Remember from the diagram, we want to have two reducers: `authReducer` and `surveysReducer`.
 
 Create a new folder to store all the reducers: `./client/src/reducers/`:
 
 * `./client/src/reducers/index.js`: to easily import all the reducers in the dir.
 * `./client/src/reducers/authReducer.js`
+
+```javascript
+// ./client/src/reducers/authReducer.js
+//---------------------------------------------------------
+/**
+ * @param The state
+ * @param The action object
+ */
+export default function(state = {}, action) {
+  switch (action.type) {
+    default:
+      return state; // No change to our state
+  }
+}
+```
+
+After creating the reducer function, import it into `./client/src/reducers/index.js` and combine it with `combineReducers()`:
+
+```javascript
+// ./client/src/reducers/index.js
+//---------------------------------------------------------
+import { combineReducers } from 'redux';
+import authReducer from './authReducer';
+// The keys passed into the 'combineReducers' will be the keys of our state.
+export default combineReducers({
+  auth: authReducer
+});
+```
+
+The last step is to import the `combineReducers` above into top-level `index.js` file and use it to create a store:
+
+```javascript
+// ./client/src/index.js
+//---------------------------------------------------------
+import reducers from "./reducers";
+const store = createStore(reducers, {}, applyMiddleware());
+```
+
+---
+
+### 3. Why We Care About Auth
+
+We just finished wiring up everything on the Redux side of our application. We create an `authReducer` to decide whether or not a user is logged in. Why we really care about this?
+
+What aspects of our application will change if a user is logged in or not logged in.
+
+The first thing the the content inside the header:
+
+* Not Logged In: Login
+* Logged In: Add Credits, Log Out...
+
+Another difference is the different routes that the user has access to:
+
+![10](./images/06/06-10.png "10")
+
+The header and the landing screen is always available. But dashboard and survey-related components are only available to logged-in users.
+
+In the next section, we are going to wire up `React Router` inside of our application. Once we set up all these different components we'll then be able to add in some further logic to decide whether or not a user can see each individual one.

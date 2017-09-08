@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
 
 import App from "./components/App";
+import reducers from "./reducers";
 
 // Create a new instance of our redux store
 /**
@@ -11,7 +12,7 @@ import App from "./components/App";
  * @param Initial state of our application
  * @param applyMiddleware() with necessary middlewares
  */
-const store = createStore(() => [], {}, applyMiddleware());
+const store = createStore(reducers, {}, applyMiddleware());
 
 /**
  * @param Root component
