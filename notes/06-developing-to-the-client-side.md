@@ -6,6 +6,9 @@
 2. [Client Setup](#user-content-2-client-setup)
     * [Route Structures](#user-content-21-route-structures)
     * [React Setup](#user-content-22-react-setup)
+    * [Redux Review](#)
+    * [Redux Setup](#)
+    * [The Auth Reducer](#)
 
 ---
 
@@ -177,9 +180,9 @@ cd ..
 npm run dev
 ```
 
-#### 2.3. Redux Setup
+#### 2.3. Redux Review
 
-The Redux is all about holding all the state (data) in our application.
+The `Redux` is all about holding all the state (data) in our application. The purpose of `React-Redux` is to make sure React and Redux work together properly. You can think the `Provider` tag as the glue btw React and Redux.
 
 ![07](./images/06/06-07.png "07")
 
@@ -195,3 +198,46 @@ Here is how Redux works behind the screen:
 Another diagram explaining the process can be viewed here:
 
 ![09](./images/06/06-09.png "09")
+
+No mater what kind of components structure we have, any component can have direct access to our state (data) by reaching redux store.
+
+#### 2.4. Redux Setup
+
+Now let's import something and set up Redux:
+```javascript
+// ./client/src/index.js
+//---------------------------------------------------------
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+// Create a new instance of our redux store
+/**
+ * @param The different reducers
+ * @param Initial state of our application
+ * @param applyMiddleware() with necessary middlewares
+ */
+const store = createStore(() => [], {}, applyMiddleware());
+```
+
+Based on the diagram, we then need to have a `Provider` tag, which is the parent of our root component `App`. We also need to pass in the `store` we just created as a prop:
+
+Everytime the data in `store` get changed, the `Provider` tag will inform all its children tags and update all the components with the new state.
+
+```javascript
+// ./client/src/index.js
+//---------------------------------------------------------
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.querySelector("#root")
+);
+```
+
+#### 2.5. The Auth Reducer
+
+In this section we'll create one reducer that will be used in our redux store. Then import it in the `./client/src/index.js` and pass it in as an argument of the `createStore()`. Remember from the diagram, we want to have two reducers: `authReducer` and `surveysReducer`.
+
+Create a new folder to store all the reducers: `./client/src/reducers/`:
+
+* `./client/src/reducers/index.js`: to easily import all the reducers in the dir.
+* `./client/src/reducers/authReducer.js`
