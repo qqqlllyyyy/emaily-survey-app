@@ -3,8 +3,9 @@ import React from "react";
 // Route: A react component to setup a rule btw a certain route and some components to be displayed.
 import { BrowserRouter, Route } from "react-router-dom";
 
+import Header from "./Header";
+
 // Use some dummy components for now
-const Header = () => <h2>Header</h2>;
 const Dashboard = () => <h2>Dashboard</h2>;
 const SurveyNew = () => <h2>SurveyNew</h2>;
 const Landing = () => <h2>Landing</h2>;
@@ -16,10 +17,14 @@ const App = () => {
     <div>
       <BrowserRouter>
         <div>
+          {/* Header will always be displayed */}
+          <Header />
           {/* Route for Landing Page */}
-          <Route exact="true" path="/" component={Landing} />
-          {/* Route for Landing Page */}
-          <Route path="/surveys" component={Dashboard} />
+          <Route exact path="/" component={Landing} />
+          {/* Route for Dashboard */}
+          <Route exact path="/surveys" component={Dashboard} />
+          {/* Route for New Survey Page */}
+          <Route path="/surveys/new" component={SurveyNew} />
         </div>
       </BrowserRouter>
     </div>

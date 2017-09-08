@@ -2,9 +2,13 @@
 
 ### Contents
 
-1. [React Router Setup](#)
-    * [Basic Usage of React Router](#)
-    * [Always Visible Components](#)
+1. [React Router Setup](#user-content-1-react-router-setup)
+    * [Basic Usage of React Router](#user-content-11-basic-usage-of-react-router)
+    * [Always Visible Components](#user-content-12-always-visible-components)
+2. [Header Component Implementation](#)
+    * [Separate Header Component Out](#)
+    * [Materialize CSS](#)
+    * [Header Design](#)
 
 ---
 
@@ -83,13 +87,102 @@ const App = () => {
     <div>
       <BrowserRouter>
         <div>
+          {/* Header will always be displayed */}
+          <Header />
           {/* Route for Landing Page */}
           <Route exact path="/" component={Landing} />
-          {/* Route for Landing Page */}
-          <Route path="/surveys" component={Dashboard} />
+          {/* Route for Dashboard */}
+          <Route exact path="/surveys" component={Dashboard} />
+          {/* Route for New Survey Page */}
+          <Route path="/surveys/new" component={SurveyNew} />
         </div>
       </BrowserRouter>
     </div>
   );
 };
 ```
+
+We'll break the `Header` component out to a separate component and make sure we can decide whether or not the user is logged in.
+
+---
+
+### 2. Header Component Implementation
+
+#### 2.1. Separate Header Component Out
+
+Instead of use a dummy variable in `'./client/src/components/App.js'`, let's create a separate file `./client/src/components/Header.js` and create a class-based component.
+
+We just want a class-based component since we don't need to use component-level state here and a functional-based component might be messy.
+
+```javascript
+// ./client/src/components/Header.js
+//---------------------------------------------------------
+import React, { Component } from 'react';
+class Header extends Component {
+  render() {
+    return <div>Header</div>;
+  }
+}
+export default Header;
+```
+
+Let's then import it in ./client/src/components/App.js and replace our dummy variable:
+```javascript
+// ./client/src/components/App.js
+//---------------------------------------------------------
+import Header from './Header';
+```
+
+#### 2.2. Materialize CSS with Webpack
+
+[Materialize CSS](http://materializecss.com/) is a famous CSS framework by any type of front-end JS framework. Note that the JavaScript part of Materialize CSS might not work properly with React. We can also use other frameworks like [Material-UI](http://www.material-ui.com/#/). But `Material-UI` uses javascript-based styling, which is not easy to change the layout. So we choose `Materialize CSS`.
+
+Lets install `Materialize CSS` using `npm` instead of a `link` tag: [http://materializecss.com/getting-started.html](http://materializecss.com/getting-started.html).
+
+```
+cd client
+npm install --save materialize-css
+```
+
+When we created our project with `create-react-app` we automatically got some infrastructure inside our project that configures and makes use of webpack, which is a `module loader`.
+
+Webpack can concatenate all the files together and arrange these files into very few generated files.
+
+![02](./images/07/07-02.png "02")
+
+We want to use `./client/node_modules/materialize-css/dist/css/materialize.min.css`. Write an import statement in our `./client/src/index.js` file and `Webpack` will notice that we want to include a css file. It will then generate a css file.
+
+```javascript
+// ./client/src/index.js
+//---------------------------------------------------------
+// Webpack assumes you'll specify a npm_module installed in './client/npm_modules/'
+import "materialize-css/dist/css/materialize.min.css";
+```
+
+#### 2.3. Header Design
+
+We now included materialize css in our application. Let's design our header.
+
+```javascript
+// ./client/src/components/Header.js
+//---------------------------------------------------------
+class Header extends Component {
+  render() {
+    return (
+      <nav>
+        <div className="nav-wrapper">
+          <a className="left brand-logo">Emaily</a>
+          <ul className="right">
+            <li>
+              <a>Login With Google</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    );
+  }
+}
+```
+Our application header looks better:
+
+![03](./images/07/07-03.png "03")
