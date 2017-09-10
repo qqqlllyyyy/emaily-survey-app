@@ -11,6 +11,7 @@
     * [Header Design](#user-content-23-header-design)
 3. [Communication between React and Server](#)
     * [Current User API](#)
+    * [Additional Proxy Rules](#)
 
 ---
 
@@ -230,3 +231,54 @@ Here is a diagram of how to figure out whether a user is signed in:
 6. Update `Header` component based on the new state.
 
 ![05](./images/07/07-05.png "05")
+
+Install `axios` to make ajax requests:
+
+```
+cd client
+npm install --save axios redux-thunk
+```
+
+Import `redux-thunk` into `./client/src/index.js` and use it as a middleware to create the redux store:
+```javascript
+// ./client/src/index.js
+//---------------------------------------------------------
+import reduxThunk from 'redux-thunk';
+const store = createStore(reducers, {}, applyMiddleware(reduxThunk));
+```
+
+Create a new folder storing all our action creators: `./client/src/actions/`:
+
+* `./client/src/actions/index.js`: To organize all our action creators in the folder. (We'll refactor it later)
+* `./client/src/actions/types.js`: Store all action types
+
+```javascript
+// ./client/src/actions/types.js
+//---------------------------------------------------------
+export const FETCH_USER = "fetch_user";
+
+// ./client/src/actions/index.js
+//---------------------------------------------------------
+import axios from 'axios';
+import { FETCH_USER } from './types';
+const fetchUser = () => {
+  axios.get('/api/current_user');
+};
+```
+
+We need another proxy rule to handle to request to the route `'/api/current_user'`.
+
+```javascript
+// ./client/package.json
+//---------------------------------------------------------
+...
+"proxy": {
+  "/auth/google": {
+    "target": "http://localhost:5000"
+  },
+  "/api/*": {
+    "target": "http://localhost:5000"
+  }
+},
+...
+```
