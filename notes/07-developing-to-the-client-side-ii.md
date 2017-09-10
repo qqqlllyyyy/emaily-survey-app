@@ -12,6 +12,7 @@
 3. [Communication between React and Server](#)
     * [Current User API](#)
     * [Additional Proxy Rules](#)
+    * [Basics of Redux Thunk](#)
 
 ---
 
@@ -281,4 +282,67 @@ We need another proxy rule to handle to request to the route `'/api/current_user
   }
 },
 ...
+```
+
+#### 3.3. Basics of Redux Thunk
+
+The action creator we created will return an action and pass it to all reducers. The action is a javascript object with a `type` property.
+
+By default, an action creator should return an action immediately. `Redux-thunk` can break this rule.
+
+![06](./images/07/07-06.png "06")
+
+Instead of returning an action, the action creator will produce an action and pass it to a dispatch function. If we call the dispatch function with an action, the action will be automatically passed into all the reducers.
+
+`Redux-thunk` allows us to have direct access to the dispatch function. We can call it manually anytime.
+
+```javascript
+// ./client/src/actions/index.js
+//---------------------------------------------------------
+// Modify the function to use 'redux-thunk'
+// Return a function. When the function is executed, make the request.
+const fetchUser = () => {
+  return function(dispatch) {
+    axios
+      .get('/api/current_user')
+      .then(res => dispatch({ type: FETCH_USER, payload: res }));
+  };
+};
+```
+
+If `redux-thunk` sees we returned a function instead of an action from an action creator, `redux-thunk` will automatically call this function and pass in the dispatch function as an argument. The advantage is that we can then call the dispatch function anytime we want. (Here we want to dispatch the action after the ajax request is finished)
+
+#### 3.4. Add the Action Creator to Component
+
+We have created an action creator `fetchUser`, the first question is where should we add this action creator to. We should add it to `./client/src/components/App.js`.
+
+The `App` component is now a functional component, we only want to fetch the user the first time the component is rendered to the screen. So it's better to refactor the component to be class-based. That way we can use life-cycle methods to fetch the users.
+
+```javascript
+// ./client/src/components/App.js
+//---------------------------------------------------------
+import React, { Component } from "react";
+class App extends Component {
+  componentDidMount() {
+
+  }
+  render() {
+    return (
+      <div className="container">
+        <BrowserRouter>
+          <div>
+            {/* Header will always be displayed */}
+            <Header />
+            {/* Route for Landing Page */}
+            <Route exact path="/" component={Landing} />
+            {/* Route for Dashboard */}
+            <Route exact path="/surveys" component={Dashboard} />
+            {/* Route for New Survey Page */}
+            <Route path="/surveys/new" component={SurveyNew} />
+          </div>
+        </BrowserRouter>
+      </div>
+    );
+  }
+}
 ```

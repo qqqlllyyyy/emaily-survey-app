@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 // BrowserRouter: Brain of react-router, it tells react-router how to behave.
 // Route: A react component to setup a rule btw a certain route and some components to be displayed.
 import { BrowserRouter, Route } from "react-router-dom";
