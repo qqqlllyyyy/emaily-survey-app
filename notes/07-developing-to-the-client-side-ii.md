@@ -13,6 +13,10 @@
     * [Current User API](#)
     * [Additional Proxy Rules](#)
     * [Basics of Redux Thunk](#)
+    * [Import the Action Creator to Component](#)
+    * [Get Communicated to the Reducers](#)
+    * [Refactor the Action Creator to Async/Await](#)
+    * [AuthReducer Return Values](#)
 
 ---
 
@@ -262,7 +266,7 @@ export const FETCH_USER = "fetch_user";
 //---------------------------------------------------------
 import axios from 'axios';
 import { FETCH_USER } from './types';
-const fetchUser = () => {
+export const fetchUser = () => {
   axios.get('/api/current_user');
 };
 ```
@@ -312,7 +316,7 @@ const fetchUser = () => {
 
 If `redux-thunk` sees we returned a function instead of an action from an action creator, `redux-thunk` will automatically call this function and pass in the dispatch function as an argument. The advantage is that we can then call the dispatch function anytime we want. (Here we want to dispatch the action after the ajax request is finished)
 
-#### 3.4. Add the Action Creator to Component
+#### 3.4. Import the Action Creator to Component
 
 We have created an action creator `fetchUser`, the first question is where should we add this action creator to. We should add it to `./client/src/components/App.js`.
 
@@ -322,9 +326,12 @@ The `App` component is now a functional component, we only want to fetch the use
 // ./client/src/components/App.js
 //---------------------------------------------------------
 import React, { Component } from "react";
+import { connect } from "react-redux"; // This gives the component the ability to call action creators.
+import * as actions from "../actions";
+
 class App extends Component {
   componentDidMount() {
-
+    this.props.fetchUser();
   }
   render() {
     return (
@@ -343,6 +350,66 @@ class App extends Component {
         </BrowserRouter>
       </div>
     );
+  }
+}
+
+/**
+ * @param mapStateToProps
+ * @param actions that will be assigned to the component as props
+ */
+export default connect(null, actions)(App);
+```
+
+#### 3.5. Get Communicated to the Reducers
+
+Make sure the action creator `fetchUser()` can access to the reducer in `./client/src/reducers/authReducer.js`:
+
+```javascript
+// ./client/src/reducers/authReducer.js
+//---------------------------------------------------------
+export default function(state = {}, action) {
+  console.log(action);
+  ...
+}
+```
+
+We can now see the action in a browser console. This is an `axios` response object. Its `data` argument is the actual json object that the server sent to us.
+
+![07](./images/07/07-07.png "07")
+
+Now everything looks good.
+
+#### 3.6. Refactor the Action Creator to Async/Await
+
+Let's refactor our action creator to make it better:
+
+```javascript
+// ./client/src/actions/index.js
+//---------------------------------------------------------
+// Return an async function whose argument is 'dispatch'
+export const fetchUser = () => async dispatch => {
+  const res = await axios.get("/api/current_user");
+  dispatch({ type: FETCH_USER, payload: res.data }); // res.data is the response json object.
+};
+```
+
+#### 3.7. AuthReducer Return Values
+
+Let's modify the `./client/src/reducers/authReducer.js` to complete our reducer. But before that, we have to consider three situations:
+
+![08](./images/07/07-08.png "08")
+
+```javascript
+// ./client/src/reducers/authReducer.js
+//---------------------------------------------------------
+import { FETCH_USER } from '../actions/types';
+
+export default function(state = {}, action) {
+  switch (action.type) {
+    case FETCH_USER:
+
+    default:
+      return state; // No change to our state
   }
 }
 ```

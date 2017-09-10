@@ -1,3 +1,5 @@
+import { FETCH_USER } from "../actions/types";
+
 /**
  * @param The state
  * @param The action object
