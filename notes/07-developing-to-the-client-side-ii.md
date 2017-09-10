@@ -17,6 +17,7 @@
     * [Get Communicated to the Reducers](#)
     * [Refactor the Action Creator to Async/Await](#)
     * [AuthReducer Return Values](#)
+4. [Access State in Header](#)
 
 ---
 
@@ -397,6 +398,10 @@ export const fetchUser = () => async dispatch => {
 
 Let's modify the `./client/src/reducers/authReducer.js` to complete our reducer. But before that, we have to consider three situations:
 
+* While we're waiting for the request to finish, we should return `null`.
+* If the user is logged in, return the `User` model.
+* If not logged in, return `false`.
+
 ![08](./images/07/07-08.png "08")
 
 ```javascript
@@ -404,12 +409,76 @@ Let's modify the `./client/src/reducers/authReducer.js` to complete our reducer.
 //---------------------------------------------------------
 import { FETCH_USER } from '../actions/types';
 
-export default function(state = {}, action) {
+export default function(state = null, action) {
   switch (action.type) {
     case FETCH_USER:
-
+      // action.payload will be an empty string if the user is not logged in.
+      // It is the user model if the user is logged in.
+      return action.payload || false;
     default:
       return state; // No change to our state
+  }
+}
+```
+
+---
+
+### 4. Access State in Header
+
+We want to access the state in our `Header` component. So we need to hook it up with our redux store: import `connect` helper and use `mapStateToProps()`.
+
+```javascript
+// ./client/src/components/Header.js
+//---------------------------------------------------------
+import { connect } from "react-redux";
+
+class Header extends Component {
+  render() {
+    console.log(this.props);
+    return (...);
+  }
+}
+
+function mapStateToProps(state) {
+  // We just care about the 'auth' piece
+  return { auth: state.auth };
+}
+// Equivalent to (by destruction):
+// function mapStateToProps({ auth }) { return { auth }; }
+
+export default connect(mapStateToProps)(Header);
+```
+
+By printing out the `props`, we can see two objects in our browser console. The first `auth` property is null, which means we are waiting for the response. The second `auth` property is a user object.
+
+![09](./images/07/07-09.png "09")
+
+Let's then modify the header:
+
+```javascript
+// ./client/src/components/Header.js
+//---------------------------------------------------------
+class Header extends Component {
+  renderContent() {
+    switch (this.props.auth) {
+      case null:
+        return "Still deciding...";
+      case false:
+        return "I'm logged out.";
+      default:
+        return "I'm logged in.";
+    }
+  }
+
+  render() {
+    return (
+      <nav>
+        <div className="nav-wrapper">
+          <a className="left brand-logo">Emaily</a>
+          <ul className="right">{this.renderContent()}</ul>
+        </div>
+      </nav>
+    );
   }
 }
 ```
