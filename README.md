@@ -76,3 +76,27 @@ A full stack project with React and Node.
 3. Why We Care About Auth
 
 ### Part VII. [Developing the Client Side - II](notes/07-developing-to-the-client-side-ii.md)
+
+1. React Router Setup
+    * Basic Usage of React Router
+    * Always Visible Components
+2. Header Component Implementation
+    * Separate Header Component Out
+    * Materialize CSS with Webpack
+    * Header Design
+3. Communication between React and Server
+    * Current User API
+    * Additional Proxy Rules
+    * Basics of Redux Thunk
+    * Import the Action Creator to Component
+    * Get Communicated to the Reducers
+    * Refactor the Action Creator to Async/Await
+    * AuthReducer Return Values
+4. After Logged In
+    * Access State in Header
+    * Redirecting a User on Auth
+    * Redirect on Logout
+    * Modify the Landing Component
+    * Link in Header
+
+### Part VIII. [Client Side Billing](notes/08-client-side-billing.md)
