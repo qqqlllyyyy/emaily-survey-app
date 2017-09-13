@@ -6,11 +6,11 @@ import { connect } from "react-redux";
 import * as actions from "../actions";
 
 import Header from "./Header";
+import Landing from "./Landing";
 
 // Use some dummy components for now
 const Dashboard = () => <h2>Dashboard</h2>;
 const SurveyNew = () => <h2>SurveyNew</h2>;
-const Landing = () => <h2>Landing</h2>;
 
 // We'll leave the outside 'div' for further css purpose.
 // Note that 'BrowserRouter' expects to have at most one child. So we need a 'div' in it.

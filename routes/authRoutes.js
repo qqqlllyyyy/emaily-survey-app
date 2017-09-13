@@ -10,7 +10,21 @@ module.exports = app => {
   );
 
   // Callback
-  app.get("/auth/google/callback", passport.authenticate("google"));
+  // Added the 3rd argument, where the request to send to after passport middleware
+  app.get(
+    "/auth/google/callback",
+    passport.authenticate("google"),
+    (req, res) => {
+      // Redirect the user to the dashboard after logged in
+      res.redirect("/surveys");
+    }
+  );
+
+  // Logout
+  app.get("/api/logout", (req, res) => {
+    req.logout();
+    res.redirect("/");
+  });
 
   // Test Authentication
   app.get("/api/current_user", (req, res) => {

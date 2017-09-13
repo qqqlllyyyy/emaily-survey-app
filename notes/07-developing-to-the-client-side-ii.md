@@ -17,7 +17,11 @@
     * [Get Communicated to the Reducers](#)
     * [Refactor the Action Creator to Async/Await](#)
     * [AuthReducer Return Values](#)
-4. [Access State in Header](#)
+4. [After Logged In](#)
+    * [Access State in Header](#)
+    * [Redirecting a User on Auth](#)
+    * [Redirect on Logout](#)
+    * [Modify the Landing Component](#)
 
 ---
 
@@ -423,7 +427,9 @@ export default function(state = null, action) {
 
 ---
 
-### 4. Access State in Header
+### 4. After Logged In
+
+#### 4.1. Access State in Header
 
 We want to access the state in our `Header` component. So we need to hook it up with our redux store: import `connect` helper and use `mapStateToProps()`.
 
@@ -462,11 +468,19 @@ class Header extends Component {
   renderContent() {
     switch (this.props.auth) {
       case null:
-        return "Still deciding...";
+        return;
       case false:
-        return "I'm logged out.";
+        return (
+          <li>
+            <a href="/auth/google">Login with Google</a>
+          </li>
+        );
       default:
-        return "I'm logged in.";
+        return (
+          <li>
+            <a href="">Logout</a>
+          </li>
+        );
     }
   }
 
@@ -481,4 +495,80 @@ class Header extends Component {
     );
   }
 }
+```
+
+#### 4.2. Redirecting a User on Auth
+
+Let's modify the redirecting path after logged in. `Passport.js` is actually a middleware. It will take the request `'/auth/google/callback'` and go through google auth workflow, and then pass the request on to the next middleware. But we have not defined it yet.
+
+```javascript
+// ./routes/authRoutes.js
+//---------------------------------------------------------
+// Callback
+// Added the 3rd argument, where the request to send to after passport middleware
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google"),
+  (req, res) => {
+    // Redirect the user to the dashboard after logged in
+    res.redirect("/surveys");
+  }
+);
+```
+
+#### 4.3. Redirect on Logout
+
+Remember we use cookies to track the user and determine whether he is logged in. Unsetting the cookie is enough to log the user out. The real question here is how we actually empty the cookie. We have two options when a user clicks the 'logout' button:
+
+![10](./images/07/07-10.png "10")
+
+The first option is easier, but the second option will be a much faster process. We'll use the first option for now.
+
+```javascript
+// ./client/src/components/Header.js
+//---------------------------------------------------------
+class Header extends Component {
+  renderContent() {
+    switch (this.props.auth) {
+      ...
+      default:
+        return (
+          <li>
+            <a href="/api/logout">Logout</a>
+          </li>
+        );
+    }
+  }
+  render() {...}
+}
+// ./routes/authRoutes.js
+//---------------------------------------------------------
+// Logout
+app.get("/api/logout", (req, res) => {
+  req.logout();
+  res.redirect("/");
+});
+```
+
+#### 4.4. Modify the Landing Component
+
+Make a file for Landing component and remove the dummy component: `./client/src/components/Landing.js`
+
+```javascript
+// ./client/src/components/Landing.js
+//---------------------------------------------------------
+import React from "react";
+const Landing = () => {
+  return (
+    <div style={{ textAlign: "center" }}>
+      <h1>Emaily!</h1>
+      Collect feedback from your users
+    </div>
+  );
+};
+export default Landing;
+
+// ./client/src/components/App.js
+//---------------------------------------------------------
+import Landing from "./Landing";
 ```
