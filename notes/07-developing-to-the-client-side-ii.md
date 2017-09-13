@@ -22,6 +22,7 @@
     * [Redirecting a User on Auth](#)
     * [Redirect on Logout](#)
     * [Modify the Landing Component](#)
+    * [Link in Header](#)
 
 ---
 
@@ -571,4 +572,41 @@ export default Landing;
 // ./client/src/components/App.js
 //---------------------------------------------------------
 import Landing from "./Landing";
+```
+
+#### 4.5. Link in Header
+
+We want the user to be redirected when he clicks the logo in the header. It's a little tricky because the page that the link directs the user will change depends on whether or not the user is logged in.
+
+* Not logged in: Root route (`Landing` component)
+* Logged: Dashboard screen
+
+To handle navigation with `react-router`, we have `Link` tag. This is provided by the `react-router-dom` library and is used to navigate around components hosted by `react-router`. This is different from a traditional `a` tag which is used to navigate between HTML documents.
+
+![11](./images/07/07-11.png "11")
+
+Remember we have `this.props.auth` to determine whether or not the user is logged in.
+
+```javascript
+// ./client/src/components/Header.js
+//---------------------------------------------------------
+import { Link } from 'react-router-dom';
+class Header extends Component {
+  ...
+  render() {
+    return (
+      <nav>
+        <div className="nav-wrapper">
+          <Link
+            to={this.props.auth ? '/surveys' : '/'}
+            className="left brand-logo"
+          >
+            Emaily
+          </Link>
+          <ul className="right">{this.renderContent()}</ul>
+        </div>
+      </nav>
+    );
+  }
+}
 ```
