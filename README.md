@@ -99,4 +99,4 @@ A full stack project with React and Node.
     * Modify the Landing Component
     * Link in Header
 
-### Part VIII. [Client Side Billing](notes/08-client-side-billing.md)
+### Part VIII. [Handling Payments](notes/08-handling-payments.md)

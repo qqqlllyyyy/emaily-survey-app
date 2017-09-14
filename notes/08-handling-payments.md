@@ -1,8 +1,8 @@
-# Client Side Billing
+# Handling Payments
 
 ### Contents
 
-1. [Integrate Billing on the Front-end](#)
+1. [Client Side Billing](#)
     * [Intro and Billing Considerations](#)
     * [Stripe Billing Process](#)
     * [Stripe API Keys](#)
@@ -11,7 +11,7 @@
 
 ---
 
-### 1. Integrate Billing on the Front-end
+### 1. Client Side Billing
 
 #### 1.1. Intro and Billing Considerations
 
