@@ -123,3 +123,54 @@ console.log('Environment is', process.env.NODE_ENV);
 ![08](./images/08/08-08.png "08")
 
 #### 1.4. The Payments Components
+
+Let's create a new component to wrap up the payment configurations and display the button `'Add Credits'` int the header: `./client/src/components/Payments.js`:
+
+```javascript
+// ./client/src/components/Payments.js
+//---------------------------------------------------------
+import React, { Component } from 'react';
+import StripeCheckout from 'react-stripe-checkout';
+class Payments extends Component {
+  render() {
+    // amount: Amount of money we want to receive, we need to specify the currency. Default US dollars.
+    // The unit is cent, so we should enter 500 if we want 5 dollars.
+    // token: A callback function that will be called after we received an authorized token from Stripe API.
+    return (
+      <StripeCheckout
+        amount={500}
+        token={token => console.log(token)}
+        stripeKey={process.env.REACT_APP_STRIPE_KEY}
+      />
+    );
+  }
+}
+export default Payments;
+```
+
+Then import the Payments component into the header:
+```javascript
+// ./client/src/components/Header.js
+//---------------------------------------------------------
+import Payments from './Payments';
+...
+  renderContent() {
+    switch (this.props.auth) {
+      ...
+      default:
+        return [
+          <li><Payments /></li>,
+          <li><a href="/api/logout">Logout</a></li>
+        ];
+    }
+  }
+...
+```
+
+Now we'll have an ugly button in the header. A pop-up window will show up if we click it:
+
+![09](./images/08/08-09.png "08")
+
+After making payment with some fake information, the token will be returned. We defined the callback function in `./client/src/components/Payments.js` for `StripeCheckout`. We care about the `id` property and we can use it to make further request to Stripe API.
+
+![10](./images/08/08-10.png "08")
