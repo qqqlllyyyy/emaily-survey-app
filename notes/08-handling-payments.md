@@ -136,8 +136,12 @@ class Payments extends Component {
     // amount: Amount of money we want to receive, we need to specify the currency. Default US dollars.
     // The unit is cent, so we should enter 500 if we want 5 dollars.
     // token: A callback function that will be called after we received an authorized token from Stripe API.
+    // name: Header displayed in the pop-up window.
+    // description: Some text displayed
     return (
       <StripeCheckout
+        name="Emaily"
+        description="$5 for 5 email credits"
         amount={500}
         token={token => console.log(token)}
         stripeKey={process.env.REACT_APP_STRIPE_KEY}
@@ -159,8 +163,8 @@ import Payments from './Payments';
       ...
       default:
         return [
-          <li><Payments /></li>,
-          <li><a href="/api/logout">Logout</a></li>
+          <li key="1"><Payments /></li>,
+          <li key="2"><a href="/api/logout">Logout</a></li>
         ];
     }
   }
@@ -169,8 +173,48 @@ import Payments from './Payments';
 
 Now we'll have an ugly button in the header. A pop-up window will show up if we click it:
 
-![09](./images/08/08-09.png "08")
+![09](./images/08/08-09.png "09")
 
 After making payment with some fake information, the token will be returned. We defined the callback function in `./client/src/components/Payments.js` for `StripeCheckout`. We care about the `id` property and we can use it to make further request to Stripe API.
 
-![10](./images/08/08-10.png "08")
+![10](./images/08/08-10.png "10")
+
+We can pass in a child component to `StripeCheckout` to change the style:
+
+```javascript
+// ./client/src/components/Payments.js
+//---------------------------------------------------------
+...
+  return (
+    <StripeCheckout
+      name="Emaily"
+      description="$5 for 5 email credits"
+      amount={500}
+      token={token => console.log(token)}
+      stripeKey={process.env.REACT_APP_STRIPE_KEY}
+    >
+      <button className="btn">Add Credits</button>
+    </StripeCheckout>
+  );
+...
+```
+
+#### 1.5. Reusing Action Types
+
+After the user made the payment, remaining credits in the header should be updated. We also want to save the number of credits in the user model. We can reuse the `authReducer` to update the header.
+
+![11](./images/08/08-11.png "11")
+
+We just need to make a new action creator to communicate with the backend:
+
+```javascript
+// ./client/src/actions/index.js
+//---------------------------------------------------------
+// Handle token from Stripe API
+export const handleToken = token => async dispatch => {
+  const res = await axios.post("/api/stripe", token);
+  // What type of action do we want to dispatch
+  // We can use 'FETCH_USER' just like before
+  dispatch({ type: FETCH_USER, payload: res.data });
+};
+```
