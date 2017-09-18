@@ -100,3 +100,20 @@ A full stack project with React and Node.
     * Link in Header
 
 ### Part VIII. [Handling Payments](notes/08-handling-payments.md)
+
+1. Client Side Billing
+    * Intro and Billing Considerations
+    * Stripe Billing Process
+    * Stripe API Keys
+    * The Payments Components
+    * Reusing Action Types
+2. Sever Side Billing
+    * Post Request Handlers
+    * Creating Charges
+    * BodyParser Middleware
+    * Creating a Charge Object
+3. After Charging the User
+    * Adding Credits to a User
+    * Requiring Authentication
+    * Route-Specific Middlewares
+    * Displaying Credit Quantity
