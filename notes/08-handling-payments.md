@@ -7,7 +7,8 @@
     * [Stripe Billing Process](#)
     * [Stripe API Keys](#)
     * [The Payments Components](#)
-    * [](#)
+    * [Reusing Action Types](#)
+2. [Sever Side Billing](#)
 
 ---
 
@@ -216,5 +217,74 @@ export const handleToken = token => async dispatch => {
   // What type of action do we want to dispatch
   // We can use 'FETCH_USER' just like before
   dispatch({ type: FETCH_USER, payload: res.data });
+};
+```
+
+Now we have the action creator, we need to make sure that it is called whenever we get a token from the Stripe checkout form. To do this, import the creators into `./client/src/components/Payments.js`:
+
+```javascript
+// ./client/src/actions/index.js
+//---------------------------------------------------------
+import { connect } from 'react-redux';
+import * as actions from '../actions';
+...
+  return (
+    <StripeCheckout
+      name="Emaily"
+      description="$5 for 5 email credits"
+      amount={500}
+      token={token => this.props.handleToken(token)} // Call our action creator
+      stripeKey={process.env.REACT_APP_STRIPE_KEY}
+    >
+      <button className="btn">Add Credits</button>
+    </StripeCheckout>
+  );
+...
+export default connect(null, actions)(Payments);
+```
+
+---
+
+### 2. Server Side Billing
+
+#### 2.1. Post Request Handlers
+
+Our Express API does not have a route handler set up to watch for post requests to the route. Let's create one and add some logic to handle all the Stripe charging stuff.
+
+Create a new file containing all the billing handlers: `./routes/billingRoutes.js`:
+
+```javascript
+// ./routes/billingRoutes.js
+//---------------------------------------------------------
+module.exports = app => {
+  // This is used in the action creator in "./client/src/actions/index.js"
+  app.post("/api/stripe", (req, res) => {});
+};
+
+//---------------------------------------------------------
+// ./index.js
+//---------------------------------------------------------
+...
+// Billing Route Handler
+require("./routes/billingRoutes")(app);
+...
+```
+
+#### 2.2. Creating Charges
+
+We need a npm module to work with Stripe on the backend. It will take the token from front-end and turn it into actural charge to the credit card: [stripe api wrapper](https://www.npmjs.com/package/stripe). The full documentation about charges can be viewed here: [https://stripe.com/docs/api/node#charges](https://stripe.com/docs/api/node#charges)
+
+The `charge object` described in the doc is what we can get from Stripe API after charging.
+
+![12](./images/08/08-12.png "12")
+
+We need to figure out what to send to the Stripe API to create a charge here: [Create a charge](https://stripe.com/docs/api/node#create_charge)
+
+```javascript
+// ./routes/billingRoutes.js
+//---------------------------------------------------------
+module.exports = app => {
+  // This is used in the action creator in "./client/src/actions/index.js"
+  app.post("/api/stripe", (req, res) => {});
 };
 ```
