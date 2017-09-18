@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cookieSession = require("cookie-session");
 const passport = require("passport");
+const bodyParser = require("body-parser");
 const keys = require("./config/keys");
 
 require("./models/User");
@@ -15,6 +16,13 @@ mongoose.connect(keys.mongoURI);
 // This is a function that takes our 'app' and attach two routes to it.
 const authRoutes = require("./routes/authRoutes");
 const app = express();
+
+//-------------------------------------------------------------------
+// Apply Middleware: bodyParser
+//-------------------------------------------------------------------
+// When a request with body comes in, the middleware will parse the body
+// and assign it to 'req.body' of the incoming request.
+app.use(bodyParser.json());
 
 //-------------------------------------------------------------------
 // Enable Cookie-based Authentication

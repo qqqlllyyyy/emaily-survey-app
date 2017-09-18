@@ -9,6 +9,12 @@
     * [The Payments Components](#)
     * [Reusing Action Types](#)
 2. [Sever Side Billing](#)
+    * [Post Request Handlers](#)
+    * [Creating Charges](#)
+    * [BodyParser Middleware](#)
+    * [aaaa](#)
+    * [aaaa](#)
+    * [aaaa](#)
 
 ---
 
@@ -274,17 +280,54 @@ require("./routes/billingRoutes")(app);
 
 We need a npm module to work with Stripe on the backend. It will take the token from front-end and turn it into actural charge to the credit card: [stripe api wrapper](https://www.npmjs.com/package/stripe). The full documentation about charges can be viewed here: [https://stripe.com/docs/api/node#charges](https://stripe.com/docs/api/node#charges)
 
+```
+npm install --save stripe
+```
+
 The `charge object` described in the doc is what we can get from Stripe API after charging.
 
 ![12](./images/08/08-12.png "12")
 
 We need to figure out what to send to the Stripe API to create a charge here: [Create a charge](https://stripe.com/docs/api/node#create_charge)
 
+![13](./images/08/08-13.png "13")
+
+#### 2.3. BodyParser Middleware
+
+When you make a request to the Express server in the action creator, Express does not by default parse the request payload. We need to install another little module to instruct Express to take the request body, parse it and make it available to everything inside of our application.
+
+![14](./images/08/08-14.png "14")
+
+The description for the module `body-parser` is [here](https://www.npmjs.com/package/body-parser): Parse incoming request bodies in a middleware before your handlers, available under the `req.body` property.
+
+```
+npm install --save body-parser
+```
+Use it in the `./index.js`. Since this is a middleware, it should be wired up wit `'app.use()'` call.
+```javascript
+// ./index.js
+//---------------------------------------------------------
+const bodyParser = require("body-parser");
+// Apply Middleware: bodyParser
+// When a request with body comes in, the middleware will parse the body
+// and assign it to 'req.body' of the incoming request.
+app.use(bodyParser.json());
+```
+
+#### 2.4. Creating a Charge Object
+
+We can test the body-parser by `console.log(req.body)` in our router. After submitting the payment form, the payload can be viewed in the terminal:
+
 ```javascript
 // ./routes/billingRoutes.js
 //---------------------------------------------------------
+const keys = require("../config/keys");
+const stripe = require("stripe")(keys.stripeSecretKey);
 module.exports = app => {
-  // This is used in the action creator in "./client/src/actions/index.js"
-  app.post("/api/stripe", (req, res) => {});
+  app.post("/api/stripe", (req, res) => {
+    console.log(req.body); // To test the body-parser middleware
+  });
 };
 ```
+
+![15](./images/08/08-15.png "15")
