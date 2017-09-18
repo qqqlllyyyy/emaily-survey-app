@@ -12,6 +12,10 @@
     * [Post Request Handlers](#)
     * [Creating Charges](#)
     * [BodyParser Middleware](#)
+    * [Creating a Charge Object](#)
+3. [After Charging the User](#)
+    * [Adding Credits to a User](#)
+    * [Requiring Authentication](#)
     * [aaaa](#)
     * [aaaa](#)
     * [aaaa](#)
@@ -331,3 +335,98 @@ module.exports = app => {
 ```
 
 ![15](./images/08/08-15.png "15")
+
+Then let's take the token and make the charge. Note that the call `stripe.charges.create()` returns a promise. So we used `async/await` keywords.
+
+```javascript
+// ./routes/billingRoutes.js
+//---------------------------------------------------------
+module.exports = app => {
+  app.post("/api/stripe", async (req, res) => {
+    // Take the token and make the charge
+    // It returns an object of the charge just occured.
+    const charge = await stripe.charges.create({
+      amount: 500,
+      currency: "usd",
+      description: "$5 for 5 credits",
+      source: req.body.id // This is the token from front-end request body
+    });
+    console.log(charge);
+  });
+};
+```
+
+A `charge` object will be returned in the terminal:
+
+![16](./images/08/08-16.png "16")
+
+Now we have charged the user successfully.
+
+---
+
+### 3. After Charging the User
+
+#### 3.1. Adding Credits to a User
+
+After billing our user for some money, we need to make sure we actually give them credit.
+
+In order to record some number of credits with each and every user. We're going to another property to our user model class.
+
+![17](./images/08/08-17.png "17")
+
+```javascript
+// ./models/User.js
+//---------------------------------------------------------
+...
+const userSchema = new Schema({
+  googleId: String,
+  credits: { type: Number, default: 0 } // pass in an object for schema
+});
+...
+```
+
+After charging the user, take the user model, add 5 credits to it and send it back to the client. Note that we can access the user model by `req.user`, which is setup by `passport` in `./index.js`.
+
+```javascript
+// ./routes/billingRoutes.js
+//---------------------------------------------------------
+module.exports = app => {
+  app.post("/api/stripe", async (req, res) => {
+    const charge = await stripe.charges.create({...});
+
+    // Add 5 credits to the user model and save it to the database.
+    // Then send the updated user to the client.
+    req.user.credits += 5;
+    // Saving to db is an async call. It will return the user model.
+    const user = await req.user.save();
+    res.send(user);
+  });
+};
+```
+
+#### 3.2. Requiring Authentication
+
+If someone made a request when he is not logged in. There will be an error since the way we coding `./routes/billingRoutes.js` assumes that the user is logged in.
+
+For this specific route handler, we can add a check below:
+
+```javascript
+// ./routes/billingRoutes.js
+//---------------------------------------------------------
+module.exports = app => {
+  app.post("/api/stripe", async (req, res) => {
+
+    // If the user is not logged in
+    if (!req.user) {
+      return res.status(401).send({ error: 'You must log in.' });
+    }
+
+    const charge = await stripe.charges.create({...});
+    req.user.credits += 5;
+    const user = await req.user.save();
+    res.send(user);
+  });
+};
+```
+
+But we may want to check this in many other places before execute any actual logic like the route handler above. We don't want to re-write the code many times. We can pull the code in another location.

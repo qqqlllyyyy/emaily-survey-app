@@ -3,7 +3,8 @@ const { Schema } = mongoose; // ES2015 version of: const Schema = mongoose.Schem
 
 // Define a schema, what records will look like
 const userSchema = new Schema({
-  googleId: String // Define the type, 'Number' is another option.
+  googleId: String, // Define the type, 'Number' is another option.
+  credits: { type: Number, default: 0 }
 });
 
 // First parameter is the name of the collection.
