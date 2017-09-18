@@ -490,7 +490,7 @@ module.exports = app => {
 
 #### 3.4. Displaying Credit Quantity
 
-Make sure the number of credits can be shown in the header.
+Make sure the number of credits can be shown in the header. When we render `Header`, we made a request and get the user model.
 
 ```javascript
 // ./client/src/components/Header.js
@@ -516,3 +516,5 @@ class Header extends Component {
   ...
 }
 ```
+
+The credits will be automatically updated after user is charged, since the `Header` component will be re-rendered when the state is updated, which is returned by the reducer.
