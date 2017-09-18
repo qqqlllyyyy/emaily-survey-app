@@ -119,3 +119,8 @@ A full stack project with React and Node.
     * Displaying Credit Quantity
 
 ### Part IX. [Back End to Front End Routing in Production](notes/09-back-end-to-front-end-routing-in-production.md)
+
+1. Express with Create-React-App in Production
+2. Routing in Production
+3. Deployment Options
+4. Adding in a Heroku Build Step

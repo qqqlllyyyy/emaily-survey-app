@@ -1,11 +1,9 @@
 ### Contents
 
-1. [Express with Create-React-App in Production](#)
-2. [Routing in Production](#)
-3. [Deployment Options](#)
-4. [Adding in a Heroku Build Step](#)
-
-
+1. [Express with Create-React-App in Production](#user-content-1-express-with-create-react-app-in-production)
+2. [Routing in Production](#user-content-2-routing-in-production)
+3. [Deployment Options](#user-content-3-deployment-options)
+4. [Adding in a Heroku Build Step](#user-content-4-adding-in-a-heroku-build-step)
 
 ---
 
@@ -116,7 +114,18 @@ Add a new script in `./package.json`, this is the only `package.json` file that 
 ...
 ```
 
-Then let's deploy our app again.
+Then let's deploy our app again. Remember to run `heroku logs` if you have errors.
+
 ```
 git push heroku master
 ```
+
+Note that we have the following logs in the terminal, which means that our `heroku-postbuild` script is running successfully.
+
+![07](./images/09/09-07.png "07")
+
+Test the app with `heroku open`.
+
+Note that if we go to [https://vast-garden-42186.herokuapp.com/surveys](https://vast-garden-42186.herokuapp.com/surveys), the entire page will be refreshed, which is a new http request. The reason is that Express has no idea what this route is about. It just load the html document. The html file load related js files and rendered the `Landing` component then.
+
+But if you click some links and `react-router` will render related components very quickly, without refreshing the whole page.
