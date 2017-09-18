@@ -124,3 +124,5 @@ A full stack project with React and Node.
 2. Routing in Production
 3. Deployment Options
 4. Adding in a Heroku Build Step
+
+### Part X. [Mongoose for Survey Creation](notes/10-mongoose-for-survey-creation.md)
