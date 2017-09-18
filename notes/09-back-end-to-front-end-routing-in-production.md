@@ -117,3 +117,6 @@ Add a new script in `./package.json`, this is the only `package.json` file that 
 ```
 
 Then let's deploy our app again.
+```
+git push heroku master
+```
