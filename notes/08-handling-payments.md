@@ -16,8 +16,8 @@
 3. [After Charging the User](#)
     * [Adding Credits to a User](#)
     * [Requiring Authentication](#)
-    * [aaaa](#)
-    * [aaaa](#)
+    * [Route-Specific Middlewares](#)
+    * [Displaying Credit Quantity](#)
     * [aaaa](#)
 
 ---
@@ -430,3 +430,89 @@ module.exports = app => {
 ```
 
 But we may want to check this in many other places before execute any actual logic like the route handler above. We don't want to re-write the code many times. We can pull the code in another location.
+
+#### 3.3. Route-Specific Middlewares
+
+Recall the logic of Express:
+
+![18](./images/08/08-18.png "18")
+
+When a request comes in, there can optionally be some number of middlewares wired up to our application. Those middlewares are used to inspect the incoming requests and modify them or change them. The requests will then be sent to different route handlers.
+
+The following middleware defined below in `./index.js` will be applied to all requests:
+
+```javascript
+// ./index.js
+//---------------------------------------------------------
+app.use(
+  cookieSession({
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    keys: [keys.cookieKey]
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+```
+
+We only want to run the authentication check on some particular route handlers, not all handlers. Create a new file `./middlewares/requireLogin.js`. We will export a function from this file, and the function is actually a middleware:
+
+```javascript
+// ./middlewares/requireLogin.js
+//---------------------------------------------------------
+/**
+ * @param req Request
+ * @param res Response
+ * @param next Function to call when the middleware is complete (pass the request to the next middleware of the chain)
+ **/
+module.exports = (req, res, next) => {
+  // If not login, terminate process and return
+  if (!req.user) {
+    return res.status(401).send({ error: 'You must log in.' });
+  }
+  // If logged in, go to the next step
+  next();
+};
+```
+
+Then wire it up to our application only for billing-related route handlers. Import the middleware and add it as the second argument of the route handler:
+
+```javascript
+// ./routes/billingRoutes.js
+//---------------------------------------------------------
+const requireLogin = require("../middlewares/requireLogin");
+module.exports = app => {
+  // Tells the handler that 'requireLogin' is a function to run whenever a request comes in.
+  app.post("/api/stripe", requireLogin, async (req, res) => {
+    ...
+  });
+}
+```
+
+#### 3.4. Displaying Credit Quantity
+
+Make sure the number of credits can be shown in the header.
+
+```javascript
+// ./client/src/components/Header.js
+//---------------------------------------------------------
+class Header extends Component {
+  renderContent() {
+    switch (this.props.auth) {
+      ...
+      default:
+        return [
+          <li key="1">
+            <Payments />
+          </li>,
+          <li key="3" style={{ margin: "0 10px" }}>
+            Credits: {this.props.auth.credits}
+          </li>,
+          <li key="2">
+            <a href="/api/logout">Logout</a>
+          </li>
+        ];
+    }
+  }
+  ...
+}
+```
