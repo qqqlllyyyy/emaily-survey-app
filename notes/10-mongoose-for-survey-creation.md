@@ -9,6 +9,12 @@
 2. [Database Setup for Surveys](#)
     * [Create Mongoose Class](#)
     * [Model Deficiencies](#)
+    * [Limitations of Subdocument Collections](#)
+    * [Setting up SubDocs](#)
+3. [Back End Setup for Surveys](#)
+    * [Survey Creation Route Handler](#)
+    * [test](#)
+    * [test](#)
     * [test](#)
     * [test](#)
     * [test](#)
@@ -69,8 +75,11 @@ const surveySchema = new Schema({
   subject: String,
   recipients: [String] // Array of strings,
   yes: { type: Number, default: 0 }, // How many users responded with `yes`
-  no: { type: Number, default: 0 }
+  no: { type: Number, default: 0 },
+  dateSent: Date,
+  lastResponded: Date
 });
+// Register this schema with mongoose
 mongoose.model("surveys", surveySchema);
 //---------------------------------------------------------
 // ./index.js
@@ -102,3 +111,40 @@ We use subdocument collections when we want to have a very clear association bet
 ![06](./images/10/10-06.png "06")
 
 The practical reason is that each record is actually a document in `MongoDB`. `MongoDB` has a limit for each document which is 4MB.
+
+#### 2.4. Setting up SubDocs
+
+Make a new file for recipients:
+
+```javascript
+// ./models/Recipient.js
+//---------------------------------------------------------
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
+const recipientSchema = new Schema({
+  email: String,
+  responded: { type: Boolean, default: false }
+});
+// Not register this schema with mongoose, we need to export it.
+module.exports = recipientSchema;
+```
+
+Then import the schema to `./models/Survey.js` and use the schema to setup the model. Remember we also want to add another property `_user` to record which user the survey belongs to.
+
+```javascript
+// ./models/Survey.js
+//---------------------------------------------------------
+const RecipientSchema = require('./Recipient');
+const surveySchema = new Schema({
+  ...
+  recipients: [RecipientSchema], // A list of schemas
+  ...
+  _user: { type: Schema.Types.ObjectId, ref: 'User' } // The user this survey belongs to
+});
+```
+
+---
+
+### 3. Back End Setup for Surveys
+
+#### 3.1. Survey Creation Route Handler

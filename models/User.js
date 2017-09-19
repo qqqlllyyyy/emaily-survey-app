@@ -7,5 +7,6 @@ const userSchema = new Schema({
   credits: { type: Number, default: 0 }
 });
 
+// Register this schema with mongoose
 // First parameter is the name of the collection.
 mongoose.model("users", userSchema);
