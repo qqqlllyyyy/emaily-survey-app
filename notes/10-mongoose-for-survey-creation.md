@@ -22,7 +22,7 @@
     * [Mailer in Use](#)
     * [Mailer Constructor](#)
     * [Testing Email Sending](#)
-    * [test](#)
+    * [Improving the Email Template](#)
     * [test](#)
     * [test](#)
 
@@ -509,6 +509,38 @@ Now if we run our app and go to the browser console, we shoule have access to `a
 
 ![16](./images/10/10-16.png "16")
 
-Manually define an object `survey` and call `axios.post()` function in the console. You'll receive an email in the mailbox.
+Manually define an object `survey` and call `axios.post()` function in the console. You'll receive an email in the mailbox. We'll get an error in the console since we have not defined the call-back function after sending the email. It'll be fixed soon.
 
 ![17](./images/10/10-17.png "17")
+
+#### 4.7. Improving the Email Template
+
+Remember the body of the email is created by our template file. Let's make it better:
+
+```javascript
+// ./services/emailTemplates/surveyTemplate.js
+//---------------------------------------------------------
+module.exports = survey => {
+  return `
+    <html>
+      <body>
+        <div style="text-align:center;">
+          <h3>I'd like your input.</h3>
+          <p>Please answer the following question:</p>
+          <p>${survey.body}</p>
+          <div>
+            <a href="http://localhost:3000">Yes</a>
+          </div>
+          <div>
+            <a href="http://localhost:3000">No</a>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+};
+```
+
+Now the email looks better:
+
+![18](./images/10/10-18.png "18")
