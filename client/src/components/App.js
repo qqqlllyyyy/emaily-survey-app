@@ -8,9 +8,10 @@ import * as actions from "../actions";
 import Header from "./Header";
 import Landing from "./Landing";
 import Dashboard from "./Dashboard";
+import SurveyNew from "./surveys/SurveyNew";
 
 // Use some dummy components for now
-const SurveyNew = () => <h2>SurveyNew</h2>;
+// const SurveyNew = () => <h2>SurveyNew</h2>;
 
 // We'll leave the outside 'div' for further css purpose.
 // Note that 'BrowserRouter' expects to have at most one child. So we need a 'div' in it.

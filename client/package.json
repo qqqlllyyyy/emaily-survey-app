@@ -20,6 +20,7 @@
     "react-scripts": "1.0.12",
     "react-stripe-checkout": "^2.6.3",
     "redux": "^3.7.2",
+    "redux-form": "^7.0.4",
     "redux-thunk": "^2.2.0"
   },
   "scripts": {
