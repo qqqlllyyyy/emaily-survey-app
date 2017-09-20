@@ -23,8 +23,8 @@
     * [Mailer Constructor](#)
     * [Testing Email Sending](#)
     * [Improving the Email Template](#)
-    * [test](#)
-    * [test](#)
+    * [Polish in the Route Handler](#)
+    * [Verifying SendGrid Click Tracking](#)
 
 2. [test](#)
 
@@ -544,3 +544,144 @@ module.exports = survey => {
 Now the email looks better:
 
 ![18](./images/10/10-18.png "18")
+
+Note that the link in the email is replaced by SendGrid's own click-tracking customized links.
+
+#### 4.8. Polish in the Route Handler
+
+We still have something to do after we successfully send the email: the survey should be saved to database. Note that `mailer.send()` is an async function, thus we need to mark the function in `./services/Mailer.js` as `async`:
+
+```javascript
+// ./services/Mailer.js
+//---------------------------------------------------------
+class Mailer extends helper.Mail {
+  ...
+  async send() {
+    const request = this.sgApi.emptyRequest({ ... });
+    const response = await this.sgApi.API(request); // Send it
+    return response;
+  }
+}
+```
+
+The callback function in `axios.post()` in the route handler should also be marked as `async`. The survey can be saved afterwards:
+
+```javascript
+// ./routes/surveyRoutes.js
+//---------------------------------------------------------
+module.exports = app => {
+  app.post("/api/surveys", reuqireLogin, requireCredits, async (req, res) => {
+    ...
+    // Send an email
+    const mailer = new Mailer(survey, surveyTemplate(survey));
+    await mailer.send();
+
+    // Save the survey and the user
+    await survey.save();
+    req.user.credits -= 1;
+    const user = await req.user.save();
+
+    // Send back the updated user model, so we have the updated credits
+    res.send(user);
+  });
+};
+```
+
+The last thing is to have some error handling in the route handler. If anything goes wrong with the async requests, just stop and send back:
+
+```javascript
+// ./routes/surveyRoutes.js
+//---------------------------------------------------------
+module.exports = app => {
+  app.post("/api/surveys", reuqireLogin, requireCredits, async (req, res) => {
+    ...
+    // Send an email
+    const mailer = new Mailer(survey, surveyTemplate(survey));
+
+    try {
+      await mailer.send();
+      // Save the survey and the user
+      await survey.save();
+      req.user.credits -= 1;
+      const user = await req.user.save();
+      // Send back the updated user model, so we have the updated credits
+      res.send(user);
+    } catch (err) {
+      // '422' means unprocessible entity
+      res.status(422).send(err);
+    }
+  });
+};
+```
+
+Now if we test it again in the browser console, we can see that the request returns an updated user model with 4 credits, which means the credit has been used:
+
+![19](./images/10/10-19.png "19")
+
+If you go to [mLab](https://mlab.com/home) and check the database, there is a new collection named `surveys` and the new record has been saved:
+
+![20](./images/10/10-20.png "20")
+
+#### 4.9. Verifying SendGrid Click Tracking
+
+Let's try to click the link in the email and test the click tracking. You can go to `Activity` section in SendGrid dashboard and view all the actions by the recipients:
+
+![21](./images/10/10-21.png "21")
+
+The last little task is to give some feedback after a user clicks the link. He should be directed to an appropriate domain. Let specify the domain that we want the user to be redirected to in `./config/`:
+
+```javascript
+// ./config/dev.js
+//---------------------------------------------------------
+module.exports = {
+  ...
+  redirectDomain: "http://localhost:3000"
+};
+//---------------------------------------------------------
+// ./config/prod.js
+//---------------------------------------------------------
+// Don't forget to define 'REDIRECT_DOMAIN' in the Heroku dashboard
+module.exports = {
+  ...
+  redirectDomain: process.env.REDIRECT_DOMAIN
+};
+```
+
+Use the domain to update our template file and we want to take the user so some appropriate page after clicking. Let's create two route handlers first:
+
+```javascript
+// ./routes/surveyRoutes.js
+//---------------------------------------------------------
+module.exports = app => {
+  // Custom page after voting
+  app.get("/api/surveys/thanks", (res, req) => {
+    res.send("Thanks for voting.");
+  });
+  ...
+}
+```
+
+```javascript
+// ./services/emailTemplates/surveyTemplate.js
+//---------------------------------------------------------
+const keys = require("../../config/keys");
+module.exports = survey => {
+  return `
+    <html>
+      <body>
+        <div style="text-align:center;">
+          <h3>I'd like your input.</h3>
+          <p>Please answer the following question:</p>
+          <p>${survey.body}</p>
+          <div>
+            <a href="${keys.redirectDomain}/api/surveys/thanks">Yes</a>
+          </div>
+          <div>
+            <a href="${keys.redirectDomain}/api/surveys/thanks">No</a>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+};
+```

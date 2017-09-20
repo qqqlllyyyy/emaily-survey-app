@@ -8,11 +8,16 @@ const surveyTemplate = require("../services/emailTemplates/surveyTemplate");
 const Survey = mongoose.model("surveys");
 
 module.exports = app => {
+  // Custom page after voting
+  app.get("/api/surveys/thanks", (req, res) => {
+    res.send("Thanks for voting.");
+  });
+
   // Create a new survey
   // We can pass as many middlewares as we want
   // Make sure the user is logged in
   // Check the user have enough credits
-  app.post("/api/surveys", reuqireLogin, requireCredits, (req, res) => {
+  app.post("/api/surveys", reuqireLogin, requireCredits, async (req, res) => {
     // All the parameters for the POST request are in 'req.body'
     const { title, subject, body, recipients } = req.body;
 
@@ -29,6 +34,18 @@ module.exports = app => {
     // Send an email
     // Pass in survey data and the html template
     const mailer = new Mailer(survey, surveyTemplate(survey));
-    mailer.send();
+
+    try {
+      await mailer.send();
+      // Save the survey and the user
+      await survey.save();
+      req.user.credits -= 1;
+      const user = await req.user.save();
+      // Send back the updated user model, so we have the updated credits
+      res.send(user);
+    } catch (err) {
+      // '422' means unprocessible entity
+      res.status(422).send(err);
+    }
   });
 };
