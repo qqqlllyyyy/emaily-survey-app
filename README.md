@@ -150,3 +150,5 @@ A full stack project with React and Node.
     * Improving the Email Template
     * Polish in the Route Handler
     * Verifying SendGrid Click Tracking
+
+### Part XI. [Client Side Surveys](notes/11-client-side-surveys.md)
