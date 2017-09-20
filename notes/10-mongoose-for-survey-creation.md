@@ -15,7 +15,13 @@
     * [Survey Creation Route Handler](#)
     * [Verifying Minimum Credits](#)
     * [Creating Surveys](#)
+4. [Sending Emails](#)
     * [Creating Mailers](#)
+    * [SendGrid Setup](#)
+    * [Mailer Setup](#)
+    * [Mailer in Use](#)
+    * [Mailer Constructor](#)
+    * [test](#)
     * [test](#)
     * [test](#)
     * [test](#)
@@ -213,6 +219,8 @@ Let's create surveys and save them to database in the request handler.
 
 The challenge is to deal with the sub-documents `recipients` for the survey. We need to define `email` property for each recipient. If we pass in objects, mongoose will create the sub-docs for us automatically. Here is the flow:
 
+![08](./images/10/10-08.png "08")
+
 ```javascript
 // ./routes/surveyRoutes.js
 //---------------------------------------------------------
@@ -236,4 +244,234 @@ module.exports = app => {
 };
 ```
 
-#### 3.4. Creating Mailers
+---
+
+### 4. Sending Emails
+
+#### 4.1. Creating Mailers
+
+At the same time we create the survey, we also want to send an email to all the recipients. Here is the process:
+
+1. Create new survey instance
+2. Attempt to create and send email
+3. Email sent successfully?
+4. Save survey
+5. survey handler complete
+
+![09](./images/10/10-09.png "09")
+
+The `Survey` instance is the data-layer for the email, we also need the view layer: email template.
+
+In the last diagram, the 'http request' step is complicated. Let's look at the bad way to communicate the mailer to the provider first:
+
+![10](./images/10/10-10.png "10")
+
+For every single recipient, we create a single mailer object and send it to the provider. This is bad since we need many requests. We want to do a batch operation:
+
+![11](./images/10/10-11.png "11")
+
+We want to use the second option, but there are some challenges:
+
+If we use the same mailer for all the users, we may don't want to send exactly same emails to all the users, since we need to record who clicks the button. We'll get everything done later.
+
+The email provider we'll use is [SendGrid](https://sendgrid.com/). For each email sent through `SendGird`, he will look inside the body and replace all the links by customized links to their server. When a user clicks the linke, `SendGird` will collect the data and then send it to the actually original destination defined by us in the mail body.
+
+![12](./images/10/10-12.png "12")
+
+#### 4.2. SendGrid Setup
+
+Let's sign up SendGrid and let it send emails for us. Create an API key in the dashboard:
+
+![13](./images/10/10-13.png "13")
+
+Let's set the API key in both development and production environment:
+
+```javascript
+// ./config/dev.js
+//---------------------------------------------------------
+module.exports = {
+  ...
+  sendGridKey:
+    "SG.xxxxxxxxxxxxxxxxxx"
+};
+//---------------------------------------------------------
+// ./config/prod.js
+//---------------------------------------------------------
+module.exports = {
+  ...
+  sendGridKey: process.env.SEND_GRID_KEY
+};
+```
+
+Don't forget to set the environment key for Heroku:
+
+![14](./images/10/10-14.png "14")
+
+The next step is to install the SendGrid helper module:
+
+```
+npm install --save sendgrid
+```
+
+#### 4.3. Mailer Setup
+
+When we want to send an email, we need to create an instance of the `Mailer` class:
+
+![15](./images/10/10-15.png "15")
+
+The template will provide some html code as the `body` part of the mailer. After we set up all the properties, we need to call the function `toJSON()` and send it to SendGrid.
+
+Create a new service file for sending email: `./services/Mailer.js`. Note the file name is capitalized because it exports a class `Mailer`, while `./services/passport.js` doesn't export anything.
+
+```javascript
+// ./services/Mailer.js
+//---------------------------------------------------------
+const sendgrid = require("sendgrid");
+const helper = sendgrid.mail;
+// Import API key
+const keys = require("../config/keys");
+// 'helper.Mailer' takes lots of configurations for a mailer.
+// We want to add customizations to it.
+class Mailer extends helper.Mailer {}
+module.exports = Mailer;
+```
+
+#### 4.4. Mailer in Use
+
+We haven't finished up constructing the `Mailer` class. Let's assume we have done that and take a look at where it should be used first.
+
+It should be used in the route handler and send email right after a survey is created:
+
+```javascript
+// ./routes/surveyRoutes.js
+//---------------------------------------------------------
+const Mailer = require("../services/Mailer");
+module.exports = app => {
+  app.post("/api/surveys", reuqireLogin, requireCredits, (req, res) => {
+    // Created a new survey
+    ...
+    // Send an email
+    // Pass in survey data and the html template
+    const mailer = new Mailer(survey, template);
+  });
+};
+```
+
+Note that we passed in `template` as the second argument for `Mailer()` above. Let's create a template: `./services/emailTemplates/surveyTemplate.js`. It will export a function and you can get some html code when you call this function.
+
+```javascript
+// ./services/emailTemplates/surveyTemplate.js
+//---------------------------------------------------------
+// It takes the survey as the argument
+module.exports = survey => {
+  return "<div>" + survey.body + "</div>";
+};
+```
+
+Then import the template file into route handlers and use it:
+
+```javascript
+// ./routes/surveyRoutes.js
+//---------------------------------------------------------
+const surveyTemplate = require("../services/emailTemplates/surveyTemplate");
+module.exports = app => {
+  app.post("/api/surveys", reuqireLogin, requireCredits, (req, res) => {
+    // Created a new survey
+    ...
+    // Send an email
+    // Pass in survey data and the html template
+    const mailer = new Mailer(survey, surveyTemplate(survey));
+  });
+};
+```
+
+#### 4.5. Mailer Constructor
+
+We have seen where to use `Mailer` in the last section, now let's start to implement the `Mailer` class.
+
+```javascript
+// ./services/Mailer.js
+//---------------------------------------------------------
+const sendgrid = require("sendgrid");
+const helper = sendgrid.mail;
+// Import API key
+const keys = require("../config/keys");
+
+// 'helper.Mailer' takes lots of configurations for a mailer.
+// We want to add customizations to it.
+class Mailer extends helper.Mail {
+  // Constructor
+  // We just want the first argument to contain several properties. (Here is a survey object)
+  // The second argument here is the HTML string
+  constructor({ subject, recipients }, content) {
+    super(); // Make sure any constructor defined on the parent class (helper.Mail) gets executed.
+
+    this.sgApi = sendgrid(keys.sendGridKey);
+
+    // We have to define the following properties:
+    this.from_email = new helper.Email("no-reply@emaily.com");
+    this.subject = subject;
+    this.body = new helper.Content("text/html", content);
+    // Notes that the 'recipients' input is an array of objects defined in "./routes/surveyRoutes.js"
+    this.recipients = this.formatAddresses(recipients); // Helper function
+
+    // Register the content
+    // 'addContent()' is a built-in function defined in 'helper.Mail'
+    this.addContent(this.body);
+    // Enable click-tracking
+    this.addClickTracking(); // helper function
+    // Helper function to format the recipients
+    // Take them into the Mailer object.
+    this.addRecipients();
+  }
+
+  //---------------------------------------------------------------------------
+  // Helper function
+  //---------------------------------------------------------------------------
+  // Extract emails for all object and format them with `helper.Email()`
+  formatAddresses(recipients) {
+    // When destructuring the input, add additional parenthesis: ({ email })
+    return recipients.map(({ email }) => {
+      return new helper.Email(email);
+    });
+  }
+
+  //---------------------------------------------------------------------------
+  // Helper function to enable click-tracking
+  //---------------------------------------------------------------------------
+  addClickTracking() {
+    const trackingSettings = new helper.TrackingSettings();
+    const clickTracking = new helper.ClickTracking(true, true);
+
+    trackingSettings.setClickTracking(clickTracking);
+    this.addTrackingSettings(trackingSettings);
+  }
+
+  //---------------------------------------------------------------------------
+  // Helper function to format the recipients
+  //---------------------------------------------------------------------------
+  addRecipients() {
+    const personalize = new helper.Personalization();
+    this.recipients.forEach(recipient => {
+      personalize.addTo(recipient); // Add them to the 'personalize' object
+    });
+    this.addPersonalization(personalize);
+  }
+
+  //---------------------------------------------------------------------------
+  // Send it off to SendGrid
+  //---------------------------------------------------------------------------
+  // Sending email should be async
+  async send() {
+    const request = this.sgApi.emptyRequest({
+      method: "POST",
+      path: "/v3/mail/send",
+      body: this.toJSON()
+    });
+    const response = this.sgApi.API(request); // Send it
+    return response;
+  }
+}
+
+module.exports = Mailer;
+```
