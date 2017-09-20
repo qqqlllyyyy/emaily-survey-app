@@ -9,6 +9,10 @@ import reduxThunk from "redux-thunk";
 import App from "./components/App";
 import reducers from "./reducers";
 
+// Test code to make some requests
+import axios from "axios";
+window.axios = axios;
+
 // Create a new instance of our redux store
 /**
  * @param The different reducers

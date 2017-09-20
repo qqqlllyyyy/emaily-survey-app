@@ -21,7 +21,7 @@
     * [Mailer Setup](#)
     * [Mailer in Use](#)
     * [Mailer Constructor](#)
-    * [test](#)
+    * [Testing Email Sending](#)
     * [test](#)
     * [test](#)
     * [test](#)
@@ -475,3 +475,40 @@ class Mailer extends helper.Mail {
 
 module.exports = Mailer;
 ```
+
+We created a function `send()` in the end, we can call this function in the route handler to actually send the emails:
+
+```javascript
+// ./routes/surveyRoutes.js
+//---------------------------------------------------------
+module.exports = app => {
+  app.post("/api/surveys", reuqireLogin, requireCredits, (req, res) => {
+    ...
+    // Send an email
+    const mailer = new Mailer(survey, template);
+    mailer.send(); // Send the email by the function 'send()'
+  });
+};
+```
+
+#### 4.6. Testing Email Sending
+
+We have lots of code for sending email, how can we test it. We can use rest clients like [Postman](https://www.getpostman.com/) to make post requests. But this is not the best option since we need the user to login and have enough credit before sending email.
+
+We can just use the `axios` module to make a post request from our client side manually.
+
+```javascript
+// ./client/src/index.js
+//---------------------------------------------------------
+// Test code to make some requests
+import axios from "axios";
+window.axios = axios;
+```
+
+Now if we run our app and go to the browser console, we shoule have access to `axios`:
+
+![16](./images/10/10-16.png "16")
+
+Manually define an object `survey` and call `axios.post()` function in the console. You'll receive an email in the mailbox.
+
+![17](./images/10/10-17.png "17")
