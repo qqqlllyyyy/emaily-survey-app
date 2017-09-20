@@ -48,9 +48,10 @@ app.use(passport.session());
 authRoutes(app);
 
 //-------------------------------------------------------------------
-// Billing Route Handler
+// Billing & Survey Route Handler
 //-------------------------------------------------------------------
 require("./routes/billingRoutes")(app);
+require("./routes/surveyRoutes")(app);
 
 //-------------------------------------------------------------------
 // Instruct Express to Handle Routes Defined in Front-end
