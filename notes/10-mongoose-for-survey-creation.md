@@ -2,31 +2,29 @@
 
 ### Contents
 
-1. [Intro to Survey](#)
-    * [Survey Overview](#)
-    * [Server Routes](#)
-    * [Survey Model](#)
-2. [Database Setup for Surveys](#)
-    * [Create Mongoose Class](#)
-    * [Model Deficiencies](#)
-    * [Limitations of Subdocument Collections](#)
-    * [Setting up SubDocs](#)
-3. [Back End Setup for Surveys](#)
-    * [Survey Creation Route Handler](#)
-    * [Verifying Minimum Credits](#)
-    * [Creating Surveys](#)
-4. [Sending Emails](#)
-    * [Creating Mailers](#)
-    * [SendGrid Setup](#)
-    * [Mailer Setup](#)
-    * [Mailer in Use](#)
-    * [Mailer Constructor](#)
-    * [Testing Email Sending](#)
-    * [Improving the Email Template](#)
-    * [Polish in the Route Handler](#)
-    * [Verifying SendGrid Click Tracking](#)
-
-2. [test](#)
+1. [Intro to Survey](#user-content-1-intro-to-survey)
+    * [Survey Overview](#user-content-11-survey-overview)
+    * [Server Routes](#user-content-12-server-routes)
+    * [Survey Model](#user-content-13-survey-model)
+2. [Database Setup for Surveys](#user-content-2-database-setup-for-surveys)
+    * [Create Mongoose Class](#user-content-21-create-mongoose-class)
+    * [Model Deficiencies](#user-content-22-model-deficiencies)
+    * [Limitations of Subdocument Collections](#user-content-23-limitations-of-subdocument-collections)
+    * [Setting up SubDocs](#user-content-24-setting-up-subdocs)
+3. [Back End Setup for Surveys](#user-content-3-back-end-setup-for-surveys)
+    * [Survey Creation Route Handler](#user-content-31-survey-creation-route-handler)
+    * [Verifying Minimum Credits](#user-content-32-verifying-minimum-credits)
+    * [Creating Surveys](#user-content-33-creating-surveys)
+4. [Sending Emails](#user-content-4-sending-emails)
+    * [Creating Mailers](#user-content-41-creating-mailers)
+    * [SendGrid Setup](#user-content-42-sendgrid-setup)
+    * [Mailer Setup](#user-content-43-mailer-setup)
+    * [Mailer in Use](#user-content-44-mailer-in-use)
+    * [Mailer Constructor](#user-content-45-mailer-constructor)
+    * [Testing Email Sending](#user-content-46-testing-email-sending)
+    * [Improving the Email Template](#user-content-47-improving-the-email-template)
+    * [Polish in the Route Handler](#user-content-48-polish-in-the-route-handler)
+    * [Verifying SendGrid Click Tracking](#user-content-49-verifying-sendgrid-click-tracking)
 
 ---
 
@@ -685,3 +683,5 @@ module.exports = survey => {
   `;
 };
 ```
+
+We have finished up with back-end survey-related tasks. In the next section, we'll move on the the client-side and make sure a user has the ability to create surveys.

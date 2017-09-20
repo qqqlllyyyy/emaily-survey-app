@@ -126,3 +126,27 @@ A full stack project with React and Node.
 4. Adding in a Heroku Build Step
 
 ### Part X. [Mongoose for Survey Creation](notes/10-mongoose-for-survey-creation.md)
+
+1. Intro to Survey
+    * Survey Overview
+    * Server Routes
+    * Survey Model
+2. Database Setup for Surveys
+    * Create Mongoose Class
+    * Model Deficiencies
+    * Limitations of Subdocument Collections
+    * Setting up SubDocs
+3. Back End Setup for Surveys
+    * Survey Creation Route Handler
+    * Verifying Minimum Credits
+    * Creating Surveys
+4. Sending Emails
+    * Creating Mailers
+    * SendGrid Setup
+    * Mailer Setup
+    * Mailer in Use
+    * Mailer Constructor
+    * Testing Email Sending
+    * Improving the Email Template
+    * Polish in the Route Handler
+    * Verifying SendGrid Click Tracking
