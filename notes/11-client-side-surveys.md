@@ -11,7 +11,7 @@
     * [Why Redux Form](#)
     * [Redux Form Setup](#)
     * [The ReduxForm Helper](#)
-    * [test](#)
+    * [Custom Field Components with 'SurveyField'](#)
     * [test](#)
     * [test](#)
     * [test](#)
@@ -263,4 +263,74 @@ Let's test it by entering some text and clicking the `submit` button:
 
 ![08](./images/11/11-08.png "08")
 
+#### 2.5. Custom Field Components with 'SurveyField'
+
 Now we have a basic text-input in our app. Note that `type`, `name` and `component` are 3 basic attributes for a `Field` component. We can use our own component to replace plain text for the `component` attribute: `component={SurveyField}`.
+
+Let's refactor the `SurveyForm` component and extract the `Field` helper tag to separate `SurveyField` components.
+
+
+```javascript
+// ./client/src/components/surveys/SurveyField.js
+//---------------------------------------------------------
+// 'SurveyField' contains logic to render a single label and text input.
+import React from 'react';
+export default (props) => {
+  console.log(props);
+  return (
+    <div>
+      <input />
+    </div>
+  );
+};
+```
+
+Then import 'SurveyField' and use a helper function to render each field with `component` to be our own component `SurveyField`:
+
+```javascript
+// ./client/src/components/surveys/SurveyForm.js
+//---------------------------------------------------------
+// Import 'SurveyField' and use a helper function to render each field
+import SurveyField from './SurveyField';
+class SurveyForm extends Component {
+  // Helper function to render a 'SurveyField'
+  renderFields() {
+    return (
+      <div>
+        <Field type="text" name="title" component={SurveyField} />
+      </div>
+    );
+  }
+
+  render() {
+    // 'handleSubmit()' is added by `redux-form` as props.
+    return (
+      <div>
+        <form onSubmit={this.props.handleSubmit(values => console.log(values))}>
+          {this.renderFields()}
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    );
+  }
+}
+```
+
+After wiring up `SurveyField` (as the component) with `reduxForm.Field`, lots of fields are passed into `SurveyField` as props (we printed them out):
+
+![08](./images/11/11-08.png "08")
+
+It is noticed that `redux-form` has generated lots of event handlers in `props.input` to the field we're rendering. Let's use the event handlers and update our component `SurveyField`:
+
+```javascript
+// ./client/src/components/surveys/SurveyField.js
+//---------------------------------------------------------
+export default (props) => {
+  console.log(props);
+  return (
+    <div>
+      <input />
+    </div>
+  );
+};
+```

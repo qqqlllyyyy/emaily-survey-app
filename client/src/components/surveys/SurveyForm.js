@@ -4,17 +4,24 @@ import React, { Component } from 'react';
 // It is similar to the `connect` helper we used in the redux library.
 // `Field` allows us to create any traditional html form elements.
 import { reduxForm, Field } from 'redux-form';
+import SurveyField from './SurveyField';
 
 class SurveyForm extends Component {
+  // Helper function to render a 'SurveyField'
+  renderFields() {
+    return (
+      <div>
+        <Field type="text" name="title" component={SurveyField} />
+      </div>
+    );
+  }
+
   render() {
     // 'handleSubmit()' is added by `redux-form` as props.
     return (
       <div>
         <form onSubmit={this.props.handleSubmit(values => console.log(values))}>
-          <Field
-            type="text"
-            name="surveyTitle"
-            component="input" />
+          {this.renderFields()}
           <button type="submit">Submit</button>
         </form>
       </div>
