@@ -14,3 +14,18 @@ export const handleToken = token => async dispatch => {
   // We can use 'FETCH_USER' just like before
   dispatch({ type: FETCH_USER, payload: res.data });
 };
+
+// Submit the form
+// Take the form values and make a post request to the back-end
+export const submitSurvey = (values, history) => async dispatch => {
+  // The API returns the updated user model,
+  // which is defined in `./routes/surveyRoutes`
+  const res = await axios.post("/api/surveys", values);
+
+  // Navigate to another component using `history` by `withRouter`
+  history.push("/surveys");
+
+  // So we should also dispatch the type `FETCH_USER`
+  // to update the user model in our application state.
+  dispatch({ type: FETCH_USER, payload: res.data });
+};

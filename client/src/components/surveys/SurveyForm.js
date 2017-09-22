@@ -8,18 +8,12 @@ import { reduxForm, Field } from "redux-form";
 import { Link } from "react-router-dom";
 import SurveyField from "./SurveyField";
 import validateEmails from "../../utils/validateEmails";
-
-const FIELDS = [
-  { label: "Survey Title", name: "title" },
-  { label: "Subject Line", name: "subject" },
-  { label: "Email Body", name: "body" },
-  { label: "Recipient List", name: "emails" }
-];
+import formFields from "./formFields";
 
 class SurveyForm extends Component {
   // Helper function to render a 'SurveyField'
   renderFields() {
-    return _.map(FIELDS, field => {
+    return _.map(formFields, field => {
       return (
         <Field
           key={field.name}
@@ -36,7 +30,7 @@ class SurveyForm extends Component {
     // 'handleSubmit()' is added by `redux-form` as props.
     return (
       <div>
-        <form onSubmit={this.props.handleSubmit(values => console.log(values))}>
+        <form onSubmit={this.props.handleSubmit(this.props.onSurveySubmit)}>
           {this.renderFields()}
           <Link to="/surveys" className="red btn-flat white-text">
             Cancel
@@ -61,10 +55,10 @@ function validate(values) {
   const errors = {};
 
   // Provide an empty string if no email is entered.
-  errors.emails = validateEmails(values.emails || "");
+  errors.recipients = validateEmails(values.recipients || "");
 
   // If no content is provided
-  _.each(FIELDS, ({ name }) => {
+  _.each(formFields, ({ name }) => {
     if (!values[name]) {
       errors[name] = `You must provide a ${name}.`;
     }
@@ -76,5 +70,6 @@ function validate(values) {
 // It takes only one argument object with the configurations how we want the form to behave.
 export default reduxForm({
   validate,
-  form: "surveyForm"
+  form: "surveyForm",
+  destroyOnUnmount: false
 })(SurveyForm);

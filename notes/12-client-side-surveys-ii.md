@@ -6,9 +6,15 @@
     * [Validate Function](#)
     * [Showing Validation Errors](#)
     * [Generalizing Field Validation](#)
-    * [aaaaa](#)
-    * [aaaaa](#)
-    * [aaaaa](#)
+    * [Toggling Visibility](#)
+2. [Form Review Page](#)
+    * [Retreat to the Form](#)
+    * [Persisting Form Values](#)
+    * [Refactoring Form Fields](#)
+    * [Submitting the Form in the Review Page](#)
+    * [Dumping Form Values](#)
+    * [Posting to Surveys](#)
+    * [Redirect on Submit](#)
 
 ---
 
@@ -164,3 +170,398 @@ Now we have the validation function to validate user's input. We want `SurveyFor
 ![04](./images/12/12-04.png "04")
 
 We have 3 options to do that, let's talk about pros and cons:
+
+1. Add another route to `redux-router` for example `/surveys/new/review`.
+  * Downside: We need extra code to make sure nothing goes wrong if the user copys the url and enter the review page directly.
+2. Have some flag in our redux store to determine the status.
+  * This is a valid solution, but we need extra action creator, reducer to do that.
+3. Add a component-level state to the component `SurveyNew`.
+  * This is the option we'll choose. We don't need to much code this way.
+
+![05](./images/12/12-05.png "05")
+
+Let's create our review component first:
+
+```javascript
+// ./client/src/components/surveys/SurveyFormReview.js
+//---------------------------------------------------------
+import React from "react";
+const SurveyFormReview = () => {
+  return (
+    <div>
+      <h5>Please confirm your entries</h5>
+    </div>
+  );
+};
+export default SurveyFormReview;
+```
+
+Import the review component to the top-level component for survey (`SurveyNew`) and create a component-level state as the flag to toggle visibility.
+
+Note that we added a prop (`onSurveySubmit`) for `SurveyForm` to flip the flag.
+
+```javascript
+// ./client/src/components/surveys/SurveyNew.js
+//---------------------------------------------------------
+import SurveyFormReview from "./SurveyFormReview";
+class SurveyNew extends Component {
+  // Component-level state as a flag to toggle visibility
+  // This line is equivalent to:
+  /*
+    constructor(props) {
+      super(props);
+      this.state = { showFormReview: false };
+    }
+  */
+  state = { showFormReview: false };
+
+  // Helper function to render content
+  renderContent() {
+    if (this.state.showFormReview) {
+      return <SurveyFormReview />;
+    }
+    return (
+      <SurveyForm
+        onSurveySubmit={() => this.setState({ showFormReview: true })}
+      />
+    );
+  }
+
+  render() {
+    return <div>{this.renderContent()}</div>;
+  }
+}
+```
+
+Remember to use the prop `onSurveySubmit` as a callback function in `SurveyForm`:
+```javascript
+// ./client/src/components/surveys/SurveyForm.js
+//---------------------------------------------------------
+class SurveyForm extends Component {
+  renderFields() { ... }
+  render() {
+    return (
+      <div>
+        <form onSubmit={this.props.handleSubmit(this.props.onSurveySubmit)}>
+          ...
+        </form>
+      </div>
+    );
+  }
+}
+```
+
+---
+
+### 2. Form Review Page
+
+#### 2.1. Retreat to the Form
+
+We can test in the browser and the `SurveyFormReview` will be rendered after we submitted the form. Let's move on the review component. Users could click a `Cancel` button to go back to the previous form.
+
+First we need a prop `onCancel` passed to `SurveyFormReview` to flip the flag:
+
+```javascript
+// ./client/src/components/surveys/SurveyNew.js
+//---------------------------------------------------------
+class SurveyNew extends Component {
+  state = { showFormReview: false };
+  renderContent() {
+    if (this.state.showFormReview) {
+      return (
+        <SurveyFormReview
+          onCancel={() => this.setState({ showFormReview: false })}
+        />
+      );
+    }
+    return (...);
+  }
+  render() {...}
+}
+```
+
+Now let's update `SurveyFormReview`:
+
+```javascript
+// ./client/src/components/surveys/SurveyFormReview.js
+//---------------------------------------------------------
+// Deconstruct the 'props.onCancel' as 'onCancel'
+const SurveyFormReview = ({ onCancel }) => {
+  return (
+    <div>
+      <h5>Please confirm your entries</h5>
+      <button className="yellow darken-3 btn-flat" onClick={onCancel}>
+        Back
+      </button>
+    </div>
+  );
+};
+```
+
+#### 2.2. Persisting Form Values
+
+All the input get cleared out if we click `Back` button in the review page. How can we persist the data when we come back to it?
+
+Remember we use the `reduxForm` when exporting `SurveyForm`. There is another property named `destroyOnUnmount`. It is true by default, which means all the data will be cleared if the component is unmounted (no longer shown on the screen).
+
+```javascript
+// ./client/src/components/surveys/SurveyForm.js
+//---------------------------------------------------------
+...
+export default reduxForm({
+  validate,
+  form: "surveyForm",
+  destroyOnUnmount: false
+})(SurveyForm);
+```
+
+Next we need to show all the values in `SurveyFormReview`, how can we get access to the input values in the review page?
+
+We use `redux` to hold all the value. We still need the `connect` helper from `react-redux`.
+
+```javascript
+// ./client/src/components/surveys/SurveyFormReview.js
+//---------------------------------------------------------
+import { connect } from "react-recux";
+// Take our redux state and transform them into some props,
+// then send down to the component.
+function mapStateToProps(state) {
+  console.log(state);
+  // Pass 'formValues' as a prop into our component
+  return { formValues: state.form.surveyForm.values };
+}
+export default connect()(SurveyFormReview);
+```
+
+The application state that has been printed out can be viewed in the browser console:
+
+![06](./images/12/12-06.png "06")
+
+#### 2.3. Refactoring Form Fields
+
+Let's then extract `formValues` which is just created when generating the functional component `SurveyFormReview`.
+
+To avoid duplication, we want to extract `FIELDS` defined in `SurveyForm`:
+
+```javascript
+// ./client/src/components/surveys/formFields.js
+//---------------------------------------------------------
+export default [
+  { label: "Survey Title", name: "title" },
+  { label: "Subject Line", name: "subject" },
+  { label: "Email Body", name: "body" },
+  { label: "Recipient List", name: "emails" }
+];
+//---------------------------------------------------------
+// ./client/src/components/surveys/SurveyForm.js
+//---------------------------------------------------------
+import formFields from "./formFields";
+// Replace `FIELDS` by `formFields` for the entire file
+```
+
+Let's then finalize the review fields:
+
+```javascript
+// ./client/src/components/surveys/SurveyFormReview.js
+//---------------------------------------------------------
+import _ from "lodash";
+import formFields from "./formFields";
+const SurveyFormReview = ({ onCancel, formValues }) => {
+  // All the fields to be rendered
+  const reviewFields = _.map(formFields, ({ name, label }) => {
+    return (
+      <div key={name}>
+        <label>{label}</label>
+        <div>{formValues[name]}</div>
+      </div>
+    );
+  });
+
+  return (
+    <div>
+      <h5>Please confirm your entries</h5>
+      {reviewFields}
+      <button className="yellow darken-3 btn-flat" onClick={onCancel}>
+        Back
+      </button>
+    </div>
+  );
+};
+```
+
+All the fields are now displayed well in the review page:
+
+![07](./images/12/12-07.png "07")
+
+#### 2.4. Submitting the Form in the Review Page
+
+Let's add a button to submit the form in the review page.
+
+```javascript
+// ./client/src/components/surveys/SurveyFormReview.js
+//---------------------------------------------------------
+...
+<button className="green btn-flat right white-text">
+  Send Survey
+  <i className="material-icons right">email</i>
+</button>
+...
+```
+
+The application should 'do something' when a user clicks the button.
+
+Remeber whenever we're talking about 'do something' in our react app, we're always talking about `action creators`. Let's then create an action cretor `submitSurvey`:
+
+```javascript
+// ./client/src/actions/index.js
+//---------------------------------------------------------
+// Submit the form
+export const submitSurvey = values => {
+  return { type: "submit_survey" }; // Just leave it like this and we'll update it soon.
+};
+```
+
+Then import the action creator and hook it up with our `SurveyFormReview` component:
+
+```javascript
+// ./client/src/components/surveys/SurveyFormReview.js
+//---------------------------------------------------------
+import * as actions from "../../actions";
+// 'submitSurvey' is now a prop
+const SurveyFormReview = ({ onCancel, formValues, submitSurvey }) => {
+  ...
+  return (
+    ...
+      <button
+        onClick={() => submitSurvey(formValues)}
+        className="green btn-flat right white-text"
+      >
+    ...
+  );
+};
+export default connect(mapStateToProps, actions)(SurveyFormReview);
+```
+
+Before finishing up with the form submission, we still have some issues to fix.
+
+#### 2.5. Dumping Form Values
+
+Note that if a user clicks `Cancel` button in the form page, he will be redirected to the dashboard. But if he wants to create a new survey and enter the form page again, all the form data will be persisted beacuse of the `destroyOnUnmount` property we set in `SurveyForm` component. This is not what we want.
+
+We want the form data to be cleared whenever the user goes back to the dashboard. Here is the code we use, we'll explain it later:
+
+```javascript
+// ./client/src/components/surveys/SurveyNew.js
+//---------------------------------------------------------
+import { reduxForm } from "redux-form";
+...
+// Use 'reduxForm' helper to clean form data when a user left the page.
+export default reduxForm({
+  form: "surveyForm"
+})(SurveyNew);
+```
+
+We initially wired up our `reduxForm` helper in the component `SurveyForm`: If it is unmounted, do not destroy the values. We then wired it up with `SurveyNew` component. This time we did not use `destroyOnUnmount`. So when the container component `SurveyNew` is unmounted, the data will be cleared.
+
+That is the default behavior of `redux-form`.
+
+Before posting the object to the back-end, we noticed that we have mis-matched property names between front-end and back-end (`./routes/surveyRoutes.js`). We need to replace `emails` by `recipients` in the front-end.
+
+![08](./images/12/12-08.png "08")
+
+Only two places need to be modified:
+
+```javascript
+// ./client/src/components/surveys/formFields.js
+//---------------------------------------------------------
+export default [
+  ...
+  { label: "Recipient List", name: "recipients" }
+];
+//---------------------------------------------------------
+// ./client/src/components/surveys/SurveyForm.js
+//---------------------------------------------------------
+...
+function validate(values) {
+  ...
+  // Provide an empty string if no email is entered.
+  errors.recipients = validateEmails(values.recipients || "");
+  ...
+}
+...
+```
+
+#### 2.6. Posting to Surveys
+
+We are approaching the end of the feature:
+
+![09](./images/12/12-09.png "09")
+
+Note that we send back the user model for api `/api/surveys`, which is defined in `./routes/surveyRoutes.js`. So we should also dispatch the type `FETCH_USER` to update the user model in our application state.
+
+```javascript
+// ./client/src/actions/index.js
+//---------------------------------------------------------
+// Submit the form
+// Take the form values and make a post request to the back-end
+export const submitSurvey = values => async dispatch => {
+  // The API returns the updated user model,
+  // which is defined in `./routes/surveyRoutes`
+  const res = await axios.post("/api/surveys", values);
+  // So we should also dispatch the type `FETCH_USER`
+  // to update the user model in our application state.
+  dispatch({ type: FETCH_USER, payload: res.data });
+};
+```
+
+We can then test our application and an email will be received.
+
+#### 2.7. Redirect on Submit
+
+We want the user to be redirected to the dashboard after submitting the form. This is not as easy as you may assume. Here is why:
+
+![10](./images/12/12-10.png "10")
+
+`App` and `SurveyNew` know the `react-router`, when I say 'know', I mean these components contain some logic that directly refer to `react-router`.
+
+Inorder to let the action creator `submitSurvey` has some logic to navigate, we'll teach `SurveyFormReview` about `react-router`, then `SurveyFormReview` can pass it to the action creator:
+
+![11](./images/12/12-11.png "11")
+
+We'll use the helper `withRouter`, it can teach some component about our router so that they can navigate around in the application: [withRouter Documentation](https://reacttraining.com/react-router/web/api/withRouter)
+
+We can use the `withRouter` to get access to the variable called `history`, then use it to navigate arount.
+
+![12](./images/12/12-12.png "12")
+
+```javascript
+// ./client/src/components/surveys/SurveyFormReview.js
+//---------------------------------------------------------
+import { withRouter } from "react-router-dom";
+// 'history' is created by the helper 'withRouter'
+const SurveyFormReview = ({ onCancel, formValues, submitSurvey, history }) => {
+  const reviewFields = ...;
+  return (
+    ...
+      <button
+        onClick={() => submitSurvey(formValues, history)}
+        className="green btn-flat right white-text"
+      >
+    ...
+  );
+};
+export default connect(mapStateToProps, actions)(withRouter(SurveyFormReview));
+```
+
+The `history` object is passed into the component on the prop's object. Now we can access `history` in our action creator:
+
+```javascript
+// ./client/src/actions/index.js
+//---------------------------------------------------------
+export const submitSurvey = (values, history) => async dispatch => {
+  ...
+  // Navigate to another component using `history` by `withRouter`
+  history.push("/surveys");
+  ...
+};
+```
