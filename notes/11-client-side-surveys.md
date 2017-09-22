@@ -12,14 +12,7 @@
     * [Redux Form Setup](#)
     * [The ReduxForm Helper](#)
     * [Custom Field Components with 'SurveyField'](#)
-    * [test](#)
-    * [test](#)
-    * [test](#)
-    * [test](#)
-    * [test](#)
-    * [test](#)
-    * [test](#)
-    * [test](#)
+    * [Styling the Form](#)
 
 ---
 
@@ -297,7 +290,7 @@ class SurveyForm extends Component {
   renderFields() {
     return (
       <div>
-        <Field type="text" name="title" component={SurveyField} />
+        <Field label="Survey Title" type="text" name="title" component={SurveyField} />
       </div>
     );
   }
@@ -318,19 +311,116 @@ class SurveyForm extends Component {
 
 After wiring up `SurveyField` (as the component) with `reduxForm.Field`, lots of fields are passed into `SurveyField` as props (we printed them out):
 
-![08](./images/11/11-08.png "08")
+![09](./images/11/11-09.png "09")
 
-It is noticed that `redux-form` has generated lots of event handlers in `props.input` to the field we're rendering. Let's use the event handlers and update our component `SurveyField`:
+It is noticed that `redux-form` has generated lots of event handlers in `props.input` to the field we're rendering. Let's use the event handlers and update our component `SurveyField`.
+
+Note that the props like `label` are passed by attributes defined in `<Field>` in `SurveyForm`.
+
+```javascript
+// ./client/src/components/surveys/SurveyForm.js
+//---------------------------------------------------------
+class SurveyForm extends Component {
+  renderFields() {
+    return (
+      <div>
+        <Field
+          label="Survey Title"
+          type="text"
+          name="title"
+          component={SurveyField}
+        />
+        <Field
+          label="Subject Line"
+          type="text"
+          name="subject"
+          component={SurveyField}
+        />
+        <Field
+          label="Email Body"
+          type="text"
+          name="body"
+          component={SurveyField}
+        />
+        <Field
+          label="Recipient List"
+          type="text"
+          name="emails"
+          component={SurveyField}
+        />
+      </div>
+    );
+  }
+
+  render() { ... }
+}
+```
 
 ```javascript
 // ./client/src/components/surveys/SurveyField.js
 //---------------------------------------------------------
 export default (props) => {
-  console.log(props);
   return (
     <div>
-      <input />
+      <label>{label}</label>
+      <input {...input} />
     </div>
   );
 };
+```
+
+Now we have four input boxes with labels. To avoid duplicate `Field` in `SurveyForm`, we can define an array:
+
+```javascript
+// ./client/src/components/surveys/SurveyForm.js
+//---------------------------------------------------------
+import _ from "lodash"; // Use map function here
+const FIELDS = [
+  { label: "Survey Title", name: "title" },
+  { label: "Subject Line", name: "subject" },
+  { label: "Email Body", name: "body" },
+  { label: "Recipient List", name: "emails" }
+];
+class SurveyForm extends Component {
+  renderFields() {
+    return _.map(FIELDS, field => {
+      return (
+        <Field
+          component={SurveyField}
+          type="text"
+          label={field.label}
+          name={field.name}
+        />
+      );
+    });
+  }
+
+  render() { ... }
+}
+```
+
+#### 2.6. Styling the Form
+
+Modify the styles to make it looks better. We also got a `Cancel` button to go back to the dashboard.
+
+```javascript
+// ./client/src/components/surveys/SurveyForm.js
+//---------------------------------------------------------
+import { Link } from 'react-router-dom';
+class SurveyForm extends Component {
+  renderFields() {...}
+  render() {
+    return (
+      ...
+      <Link to="/surveys" className="red btn-flat white-text">
+        Cancel
+      </Link>
+      <button type="submit" className="teal btn-flat right white-text">
+        Submit
+        <i className="material-icons right">done</i>
+      </button>
+      ...
+    );
+  }
+}
 ```
