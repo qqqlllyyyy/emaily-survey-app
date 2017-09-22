@@ -151,4 +151,6 @@ A full stack project with React and Node.
     * Polish in the Route Handler
     * Verifying SendGrid Click Tracking
 
-### Part XI. [Client Side Surveys](notes/11-client-side-surveys.md)
+### Part XI. [Client Side Surveys - I](notes/11-client-side-surveys-i.md)
+
+### Part XII. [Client Side Surveys - II](notes/12-client-side-surveys-ii.md)

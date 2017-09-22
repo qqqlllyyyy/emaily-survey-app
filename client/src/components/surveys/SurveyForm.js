@@ -7,6 +7,7 @@ import React, { Component } from "react";
 import { reduxForm, Field } from "redux-form";
 import { Link } from "react-router-dom";
 import SurveyField from "./SurveyField";
+import validateEmails from "../../utils/validateEmails";
 
 const FIELDS = [
   { label: "Survey Title", name: "title" },
@@ -50,7 +51,30 @@ class SurveyForm extends Component {
   }
 }
 
+/**
+ * Validation Function
+ * @param values: contains all the values from the form
+ **/
+function validate(values) {
+  // We return an error object.
+  // If the returned object is empty, 'redux-form' assumes that the entire form is valid.
+  const errors = {};
+
+  // Provide an empty string if no email is entered.
+  errors.emails = validateEmails(values.emails || "");
+
+  // If no content is provided
+  _.each(FIELDS, ({ name }) => {
+    if (!values[name]) {
+      errors[name] = `You must provide a ${name}.`;
+    }
+  });
+
+  return errors;
+}
+
 // It takes only one argument object with the configurations how we want the form to behave.
 export default reduxForm({
+  validate,
   form: "surveyForm"
 })(SurveyForm);
