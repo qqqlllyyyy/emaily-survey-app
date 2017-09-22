@@ -11,6 +11,7 @@
     * [Retreat to the Form](#)
     * [Persisting Form Values](#)
     * [Refactoring Form Fields](#)
+3. [Submitting Form](#)
     * [Submitting the Form in the Review Page](#)
     * [Dumping Form Values](#)
     * [Posting to Surveys](#)
@@ -393,7 +394,11 @@ All the fields are now displayed well in the review page:
 
 ![07](./images/12/12-07.png "07")
 
-#### 2.4. Submitting the Form in the Review Page
+---
+
+### 3. Submitting Form
+
+#### 3.1. Submitting the Form in the Review Page
 
 Let's add a button to submit the form in the review page.
 
@@ -444,7 +449,7 @@ export default connect(mapStateToProps, actions)(SurveyFormReview);
 
 Before finishing up with the form submission, we still have some issues to fix.
 
-#### 2.5. Dumping Form Values
+#### 3.2. Dumping Form Values
 
 Note that if a user clicks `Cancel` button in the form page, he will be redirected to the dashboard. But if he wants to create a new survey and enter the form page again, all the form data will be persisted beacuse of the `destroyOnUnmount` property we set in `SurveyForm` component. This is not what we want.
 
@@ -491,7 +496,7 @@ function validate(values) {
 ...
 ```
 
-#### 2.6. Posting to Surveys
+#### 3.3. Posting to Surveys
 
 We are approaching the end of the feature:
 
@@ -516,7 +521,7 @@ export const submitSurvey = values => async dispatch => {
 
 We can then test our application and an email will be received.
 
-#### 2.7. Redirect on Submit
+#### 3.4. Redirect on Submit
 
 We want the user to be redirected to the dashboard after submitting the form. This is not as easy as you may assume. Here is why:
 

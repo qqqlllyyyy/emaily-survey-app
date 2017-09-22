@@ -153,4 +153,31 @@ A full stack project with React and Node.
 
 ### Part XI. [Client Side Surveys - I](notes/11-client-side-surveys-i.md)
 
+1. Survey Introduction
+    * Client Side Survey Creation
+    * Material Icons
+    * Navigation with the Link Tag
+2. New Survey Form
+    * Form Structure
+    * Why Redux Form
+    * Redux Form Setup
+    * The ReduxForm Helper
+    * Custom Field Components with 'SurveyField'
+    * Styling the Form
+
 ### Part XII. [Client Side Surveys - II](notes/12-client-side-surveys-ii.md)
+
+1. Form Validation
+    * Validate Function
+    * Showing Validation Errors
+    * Generalizing Field Validation
+    * Toggling Visibility
+2. Form Review Page
+    * Retreat to the Form
+    * Persisting Form Values
+    * Refactoring Form Fields
+3. Submitting Form
+    * Submitting the Form in the Review Page
+    * Dumping Form Values
+    * Posting to Surveys
+    * Redirect on Submit
