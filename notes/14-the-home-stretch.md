@@ -5,8 +5,8 @@
 1. [Fetching a List of Surveys](#)
 2. [Displaying Surveys in the Front End](#)
     * [Wiring Surveys Up to Redux](#)
-    * [test](#)
-    * [test](#)
+    * [Wiring React to Redux](#)
+    * [Rendering a List of Surveys](#)
     * [test](#)
     * [test](#)
 
@@ -58,3 +58,125 @@ We can test it by making a request manually in the browser console:
 ### 2. Displaying Surveys in the Front End
 
 #### 2.1. Wiring Surveys Up to Redux
+
+To display surveys in the front-end, we need another action creator to make the request:
+
+```javascript
+// ./client/src/actions/types.js
+//---------------------------------------------------------
+export const FETCH_SURVEYS = "fetch_surveys";
+//---------------------------------------------------------
+// ./client/src/actions/index.js
+//---------------------------------------------------------
+import { FETCH_USER, FETCH_SURVEYS } from "./types";
+// Fetch a list of surveys
+export const fetchSurveys = () => async dispatch => {
+  const res = await axios.get("/api/surveys");
+  dispatch({ type: FETCH_SURVEYS, payload: res.data });
+};
+```
+
+The create the reducer:
+
+```javascript
+// ./client/src/reducers/surveysReducer.js
+//---------------------------------------------------------
+import { FETCH_SURVEYS } from "../actions/types";
+// Return an empty array by default
+export default function(state = [], action) {
+  switch (action.type) {
+    case FETCH_SURVEYS:
+      return action.payload;
+    default:
+      return state;
+  }
+}
+//---------------------------------------------------------
+// ./client/src/reducers/index.js
+//---------------------------------------------------------
+import surveysReducer from "./surveysReducer";
+export default combineReducers({
+  ...
+  surveys: surveysReducer
+});
+```
+
+#### 2.2. Wiring React to Redux
+
+We want the `Dashboard` component to show the surveys. To make the logic clearer, we'll make a component `SurveyList` just to fetch and show the surveys, and import it into `Dashboard`.
+
+```javascript
+// ./client/src/components/surveys/SurveyList.js
+//---------------------------------------------------------
+import React, { Component } from "react";
+import { connect } from "react-redux";
+// Import the action creator
+import { fetchSurveys } from "../../actions";
+
+class SurveyList extends Component {
+  componentDidMount() {
+    this.props.fetchSurveys();
+  }
+  render() {
+    return <div>SurveyList</div>;
+  }
+}
+
+// Destructured `state`
+function mapStateToProps({ surveys }) {
+  return { surveys };
+}
+export default connect(mapStateToProps, { fetchSurveys })(SurveyList);
+
+//---------------------------------------------------------
+// ./client/src/components/Dashboard.js
+//---------------------------------------------------------
+import SurveyList from "./surveys/SurveyList";
+const Dashboard = () => {
+  return (
+    <div>
+      <SurveyList />
+      ...
+    </div>
+  );
+};
+```
+
+#### 2.3. Rendering a List of Surveys
+
+We'd like to use [Card](http://materializecss.com/cards.html) of `Materialize CSS` to display the surveys:
+
+```javascript
+// ./client/src/components/surveys/SurveyList.js
+//---------------------------------------------------------
+class SurveyList extends Component {
+  componentDidMount() {
+    this.props.fetchSurveys();
+  }
+  // Helper method the render surveys
+  renderSurveys() {
+    // 'reverse()' will show the newest survey on the top
+    return this.props.surveys.reverse().map(survey => {
+      return (
+        <div className="card darken-1" key={survey._id}>
+          <div className="card-content">
+            <span className="card-title">{survey.title}</span>
+            <p>{survey.body}</p>
+            <p className="right">
+              Sent On: {new Date(survey.dateSent).toLocaleDateString()}
+            </p>
+          </div>
+          <div className="card-action">
+            <a>Yes: {survey.yes}</a>
+            <a>No: {survey.no}</a>
+          </div>
+        </div>
+      );
+    });
+  }
+  // Main render method
+  render() {
+    return <div>{this.renderSurveys()}</div>;
+  }
+}
+```

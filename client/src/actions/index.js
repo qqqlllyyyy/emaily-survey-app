@@ -1,5 +1,5 @@
 import axios from "axios";
-import { FETCH_USER } from "./types";
+import { FETCH_USER, FETCH_SURVEYS } from "./types";
 
 // Return an async function whose argument is 'dispatch'
 export const fetchUser = () => async dispatch => {
@@ -28,4 +28,10 @@ export const submitSurvey = (values, history) => async dispatch => {
   // So we should also dispatch the type `FETCH_USER`
   // to update the user model in our application state.
   dispatch({ type: FETCH_USER, payload: res.data });
+};
+
+// Fetch a list of surveys
+export const fetchSurveys = () => async dispatch => {
+  const res = await axios.get("/api/surveys");
+  dispatch({ type: FETCH_SURVEYS, payload: res.data });
 };
