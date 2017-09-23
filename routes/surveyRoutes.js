@@ -1,3 +1,6 @@
+const _ = require("lodash");
+const Path = require("path-parser");
+const { URL } = require("url"); // 'url' is a default module in nodejs system.
 const mongoose = require("mongoose");
 const reuqireLogin = require("../middlewares/requireLogin");
 const requireCredits = require("../middlewares/requireCredits");
@@ -13,13 +16,39 @@ module.exports = app => {
     res.send("Thanks for voting.");
   });
 
-  // SendGrid notification
+  //------------------------------------------------------------------------------
+  // SendGrid Notification
+  //------------------------------------------------------------------------------
   app.post("/api/surveys/webhooks", (req, res) => {
-    console.log(req.body);
-    res.send({});
+    // Pull out just surveyId and choice
+    const p = new Path("/api/surveys/:surveyId/:choice");
+    // The extract process with map function
+    // 'req.body' is the list of events
+    const events = _.map(req.body, ({ email, url }) => {
+      // Remove domain part
+      // const pathname = new URL(url).pathname;
+      // 'p.test(pathname)' will return an object with two properties `surveyId` and `choice`.
+      // If `pathname` doesn't have surveyId or choice, `match` will be null;
+      const match = p.test(new URL(url).pathname);
+      if (match) {
+        return {
+          email,
+          surveyId: match.surveyId,
+          choice: match.choice
+        };
+      }
+    });
+
+    // Remove 'undefined' element from an array
+    const compactEvents = _.compact(events);
+    // Remove duplications with same 'email' and 'surveyId'
+    const uniqueEvents = _.uniqBy(compactEvents, "email", "surveyId");
+    console.log(uniqueEvents);
   });
 
-  // Create a new survey
+  //------------------------------------------------------------------------------
+  // Create a New Survey
+  //------------------------------------------------------------------------------
   // We can pass as many middlewares as we want
   // Make sure the user is logged in
   // Check the user have enough credits

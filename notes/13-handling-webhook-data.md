@@ -6,6 +6,17 @@
     * [Webhooks in Development](#)
     * [LocalTunnel Setup](#)
     * [SendGrid Setup and Testing Webhooks](#)
+    * [Encoding Survey Data](#)
+    * [Processing Pipeline](#)
+2. [Server Side Setup for Survey Results](#)
+    * [Parsing the Route](#)
+    * [test](#)
+    * [test](#)
+    * [test](#)
+    * [test](#)
+    * [test](#)
+    * [test](#)
+    * [test](#)
     * [test](#)
     * [test](#)
     * [test](#)
@@ -215,3 +226,67 @@ After the fist map function, the 2nd & 3rd records will be `undefined`:
 ![16](./images/13/13-16.png "16")
 
 ![17](./images/13/13-17.png "17")
+
+---
+
+### 2. Server Side Setup for Survey Results
+
+#### 2.1. Parsing the Route
+
+We're now going to install two modules to help us implement the pipeline mentioned in the last section:
+
+```
+npm install --save lodash path-parser
+```
+
+Then we need to do the processing logic in the route handler for `/api/surveys/webhooks`:
+
+```javascript
+// ./routes/surveyRoutes.js
+//---------------------------------------------------------
+const _ = require("lodash");
+const Path = require("path-parser");
+const { URL } = require("url"); // 'url' is a default module in nodejs system.
+// SendGrid notification
+app.post("/api/surveys/webhooks", (req, res) => {
+  // 1. The extract process with map function
+  // 'req.body' is the list of events
+  const events = _.map(req.body, ({ email, url }) => {
+    // Remove domain part
+    const pathname = new URL(url).pathname;
+    // Pull out just surveyId and choice
+    const p = new Path("/api/surveys/:surveyId/:choice");
+    // 'p.test(pathname)' will return an object with two properties `surveyId` and `choice`.
+    // If `pathname` doesn't have surveyId or choice, `match` will be null;
+    const match = p.test(pathname);
+    if (match) {
+      return {
+        email,
+        surveyId: match.surveyId,
+        choice: match.choice
+      };
+    }
+  });
+  // Remove 'undefined' element from an array
+  const compactEvents = _.compact(events);
+  // Remove duplications with same 'email' and 'surveyId'
+  const uniqueEvents = _.uniqBy(compactEvents, "email", "surveyId");
+  console.log(uniqueEvents);
+});
+```
+
+#### 2.2. Lodash Chain Helper
+
+We now have the logic in our route handler, we can condense it down.
+
+Note that we used 3 lodash helpers in the logic: `map`, `compact` and `uniqBy`. We can use the chain function to reduce the code. We can chain on as many lodash helpers as we want and get rid of the temporary variables:
+
+```javascript
+const arr = [1,3,2];
+_.chain(arr)            // [1,3,2]
+  .map(num => num * 2)  // [2,6，4]
+  .map(num => num / 10) // [0.2, 0.6, 0.4]
+  .map(num => num + 'hi there') // ["0.2hi there", "0.6hi there", "0.4hi there"]
+  .sort() // ["0.2hi there", "0.4hi there", "0.6hi there"]
+  .value(); // Returns the newly processed array
+```
