@@ -10,8 +10,8 @@
     * [Processing Pipeline](#)
 2. [Server Side Setup for Survey Results](#)
     * [Parsing the Route](#)
-    * [test](#)
-    * [test](#)
+    * [Lodash Chain Helper](#)
+    * [Checking Status and Updating Records](#)
     * [test](#)
     * [test](#)
     * [test](#)
@@ -289,4 +289,141 @@ _.chain(arr)            // [1,3,2]
   .map(num => num + 'hi there') // ["0.2hi there", "0.6hi there", "0.4hi there"]
   .sort() // ["0.2hi there", "0.4hi there", "0.6hi there"]
   .value(); // Returns the newly processed array
+```
+
+So we can chain those 3 lodash helpers:
+
+```javascript
+// ./routes/surveyRoutes.js
+//---------------------------------------------------------
+// SendGrid notification
+app.post("/api/surveys/webhooks", (req, res) => {
+  const p = new Path("/api/surveys/:surveyId/:choice");
+  const events = _.chain(req.body)
+    .map(({ email, url }) => {
+      const match = p.test(new URL(url).pathname);
+      if (match) {
+        return {
+          email,
+          surveyId: match.surveyId,
+          choice: match.choice
+        };
+      }
+    })
+    .compact()
+    .uniqBy("email", "surveyId")
+    .value();
+});
+```
+
+#### 2.3. Checking Status and Updating Records
+
+Now we have the email and the surveyId. The next step is to check the database to see whether the email has voted this survey before.
+
+Let's look at a BAD query example and figure out why it's bad:
+
+```javascript
+_.forEach(events, ({ surveyId, email, choice }) => {
+  // Find the record with some 'surveyId'
+  // BAD: because it returns the 'survey' will all sub-document of recipients to our Express server.
+  // There might be thousands of recipients and we should not return all of them.
+  let survey = await Survey.findById(surveyId);
+  // Find a recipient that matches the email and has not responded yet
+  const responder = survey.recipients.find(recipient =>
+    recipient.email === email && !recipient.responded
+  );
+  if (!responder) {
+    // The recipient has already responded
+    return console.warn('Response already logged!');
+  } else {
+    // Set the responded flag to true
+    survey.recipients.id(responder.id).responded = true;
+    survey[answer] += 1;
+    survey.lastResponded = new Date(timestamp * 1000);
+    // BAD: We're sending back not only the survey, but all the recipients to the database.
+    survey.save();
+  }
+});
+```
+
+We want to minimize the amount of data we're trying to pull out of the database. We should combine the logic in db queries and just pull out the right recipient. So we may need a complex query.
+
+```javascript
+// Find the record with the first argument as the criteria,
+// and then update the record with the second argument.
+// We don't need to pull the survey out to our Express server, just need to update it.
+const email = 'test@gmail.com';
+const choice = 'yes'; // (or 'no')
+Survey.updateOne({
+  _id: surveyId, // Find the right survey first
+  recipients: { // Look into its `recipients` sub-collection
+    // Find one element that matches the given criteria
+    $elemMatch: { email: email, responded: false }
+  }
+}, {
+  // '$inc' is a mongo operator, it allows us to put some logic inside the query.
+  // '[]' here doesn't means an array, it will be translated to 'yes' or 'no'
+  $inc: { [choice]: 1 }, // Increase choice ('yes' or 'no') by 1
+  // Look at the `recipients` subdoc collection of the survey we just found.
+  // '$' means to update just the recipient found by '$elemMatch' operator in the first argument.
+  $set: { 'recipients.$.responded': true }
+});
+```
+
+Now let's take the query to our route handler, but where should we put the query? Remember we need to do an `update` query for each event we received. So we can just add one more step in the lodash chain and run the query:
+
+```javascript
+// ./routes/surveyRoutes.js
+//---------------------------------------------------------
+const mongoose = require("mongoose");
+// Access database
+const Survey = mongoose.model("surveys");
+app.post("/api/surveys/webhooks", (req, res) => {
+  const p = new Path("/api/surveys/:surveyId/:choice");
+
+  _.chain(req.body)
+    .map(...)
+    .compact()
+    .uniqBy(...)
+    // Run query for every event in the 'events' array
+    .each(({ surveyId, email, choice }) => {
+      Survey.updateOne(
+        {
+          _id: surveyId, // Find the right survey first
+          recipients: {
+            // Look into its `recipients` sub-collection
+            // Find one element that matches the given criteria
+            $elemMatch: { email: email, responded: false }
+          }
+        },
+        {
+          // '$inc' is a mongo operator, it allows us to put some logic inside the query.
+          // '[]' here doesn't means an array, it will be translated to 'yes' or 'no'
+          $inc: { [choice]: 1 }, // Increase choice ('yes' or 'no') by 1
+          // Look at the `recipients` subdoc collection of the survey we just found.
+          // '$' means to update just the recipient found by '$elemMatch' operator in the first argument.
+          $set: { "recipients.$.responded": true },
+          lastResponded: new Date()
+        }
+      ).exec(); // Execute the query by calling 'exec()'
+    })
+    .value();
+});
+```
+
+Note that the update query is an async call, why don't we use `async/await` keywords? The reason is that in the context of the webhook `/api/surveys/webhooks`, we don't have anything to respond back to SendGrid with.
+
+We can then test our app and view the record in our database, everything works just fine:
+
+![18](./images/13/13-18.png "18")
+
+The last step is to create a router for the redirecting route `/api/surveys/:surveyId/choice`:
+
+```javascript
+// ./routes/surveyRoutes.js
+//---------------------------------------------------------
+// Custom page after voting
+app.get("/api/surveys/:surveyId/:choice", (req, res) => {
+  res.send("Thanks for voting.");
+});
 ```
