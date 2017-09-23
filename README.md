@@ -183,3 +183,16 @@ A full stack project with React and Node.
     * Redirect on Submit
 
 ### Part XIII. [Handling Webhook Data](notes/13-handling-webhook-data.md)
+
+1. Feedback with Webhooks
+    * Webhooks in Development
+    * LocalTunnel Setup
+    * SendGrid Setup and Testing Webhooks
+    * Encoding Survey Data
+    * Processing Pipeline
+2. Server Side Setup for Survey Results
+    * Parsing the Route
+    * Lodash Chain Helper
+    * Checking Status and Updating Records
+
+### Part XIV. [The Home Stretch](notes/14-the-home-stretch.md)

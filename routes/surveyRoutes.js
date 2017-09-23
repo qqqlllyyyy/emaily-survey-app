@@ -11,7 +11,23 @@ const surveyTemplate = require("../services/emailTemplates/surveyTemplate");
 const Survey = mongoose.model("surveys");
 
 module.exports = app => {
-  // Custom page after voting
+  //------------------------------------------------------------------------------
+  // Fetch All Surveys by Current User
+  //------------------------------------------------------------------------------
+  // Don't forget to pass in the middleware 'reuqireLogin' to authenticate
+  // We just don't want the surveys with their big lists of recipients.
+  app.get("/api/surveys", reuqireLogin, async (req, res) => {
+    // The current user is 'req.user'
+    // Every survey model has a property '_user' which is the user id
+    const surveys = await Survey.find({ _user: req.user.id })
+      // Do not include 'recipients'
+      .select({ recipients: false });
+    res.send(surveys);
+  });
+
+  //------------------------------------------------------------------------------
+  // Custom Page after Voting
+  //------------------------------------------------------------------------------
   app.get("/api/surveys/:surveyId/:choice", (req, res) => {
     res.send("Thanks for voting.");
   });
