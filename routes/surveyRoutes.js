@@ -13,6 +13,12 @@ module.exports = app => {
     res.send("Thanks for voting.");
   });
 
+  // SendGrid notification
+  app.post("/api/surveys/webhooks", (req, res) => {
+    console.log(req.body);
+    res.send({});
+  });
+
   // Create a new survey
   // We can pass as many middlewares as we want
   // Make sure the user is logged in
