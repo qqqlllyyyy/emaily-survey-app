@@ -10,11 +10,21 @@ class Header extends Component {
       case null:
         return;
       case false:
-        return (
-          <li>
-            <a href="/auth/google">Login with Google</a>
+        return [
+          <li key="1">
+            <a
+              href="https://github.com/qqqlllyyyy/emaily-survey-app"
+              target="_blank"
+            >
+              <i className="fa fa-code fa-lg" /> View Code
+            </a>
+          </li>,
+          <li key="2">
+            <a href="/auth/google">
+              <i className="fa fa-sign-in fa-lg" /> Login with Google
+            </a>
           </li>
-        );
+        ];
       default:
         return [
           // <li key="1">
