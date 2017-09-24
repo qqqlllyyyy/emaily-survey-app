@@ -1,5 +1,6 @@
 // Webpack assumes you'll specify a npm_module installed in './client/npm_modules/'
 import "materialize-css/dist/css/materialize.min.css";
+import "./styles/style.css";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";

@@ -17,9 +17,9 @@ class Header extends Component {
         );
       default:
         return [
-          <li key="1">
-            <Payments />
-          </li>,
+          // <li key="1">
+          //   <Payments />
+          // </li>,
           <li key="3" style={{ margin: "0 10px" }}>
             Credits: {this.props.auth.credits}
           </li>,
@@ -32,17 +32,20 @@ class Header extends Component {
 
   render() {
     return (
-      <nav>
-        <div className="nav-wrapper">
-          <Link
-            to={this.props.auth ? "/surveys" : "/"}
-            className="left brand-logo"
-          >
-            Emaily
-          </Link>
-          <ul className="right">{this.renderContent()}</ul>
+      <header>
+        <div className="container">
+          <div id="branding">
+            <h1>
+              <Link to={this.props.auth ? "/surveys" : "/"}>
+                <span className="highlight">Emaily</span> Survey
+              </Link>
+            </h1>
+          </div>
+          <nav>
+            <ul>{this.renderContent()}</ul>
+          </nav>
         </div>
-      </nav>
+      </header>
     );
   }
 }

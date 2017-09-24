@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import * as actions from "../actions";
 
 import Header from "./Header";
+import Footer from "./Footer";
 import Landing from "./Landing";
 import Dashboard from "./Dashboard";
 import SurveyNew from "./surveys/SurveyNew";
@@ -21,20 +22,19 @@ class App extends Component {
   }
   render() {
     return (
-      <div className="container">
-        <BrowserRouter>
-          <div>
-            {/* Header will always be displayed */}
-            <Header />
-            {/* Route for Landing Page */}
-            <Route exact path="/" component={Landing} />
-            {/* Route for Dashboard */}
-            <Route exact path="/surveys" component={Dashboard} />
-            {/* Route for New Survey Page */}
-            <Route path="/surveys/new" component={SurveyNew} />
-          </div>
-        </BrowserRouter>
-      </div>
+      <BrowserRouter>
+        <div>
+          {/* Header will always be displayed */}
+          <Header />
+          {/* Route for Landing Page */}
+          <Route exact path="/" component={Landing} />
+          {/* Route for Dashboard */}
+          <Route exact path="/surveys" component={Dashboard} />
+          {/* Route for New Survey Page */}
+          <Route path="/surveys/new" component={SurveyNew} />
+          <Footer />
+        </div>
+      </BrowserRouter>
     );
   }
 }
