@@ -2,16 +2,11 @@
 
 ### Contents
 
-1. [Fetching a List of Surveys](#)
-2. [Displaying Surveys in the Front End](#)
-    * [Wiring Surveys Up to Redux](#)
-    * [Wiring React to Redux](#)
-    * [Rendering a List of Surveys](#)
-    * [test](#)
-    * [test](#)
-
-
-[test](#)
+1. [Fetching a List of Surveys](#user-content-1-fetching-a-list-of-surveys)
+2. [Displaying Surveys in the Front End](#user-content-2-displaying-surveys-in-the-front-end)
+    * [Wiring Surveys Up to Redux](#user-content-21-wiring-surveys-up-to-redux)
+    * [Wiring React to Redux](#user-content-22-wiring-react-to-redux)
+    * [Rendering a List of Surveys](#user-content-23-rendering-a-list-of-surveys)
 
 ---
 
@@ -180,3 +175,5 @@ class SurveyList extends Component {
   }
 }
 ```
+
+Now we have finished up with the main features of the application. Don't forget to change the SendGrid notification setting when deploying it. Change it from `https://anytextassubdomainforliyu.localtunnel.me/api/surveys/webhooks` to `https://vast-garden-42186.herokuapp.com/api/surveys/webhooks`. We can also create a new SendGrid account.

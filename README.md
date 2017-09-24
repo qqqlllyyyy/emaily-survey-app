@@ -196,3 +196,9 @@ A full stack project with React and Node.
     * Checking Status and Updating Records
 
 ### Part XIV. [The Home Stretch](notes/14-the-home-stretch.md)
+
+1. Fetching a List of Surveys
+2. Displaying Surveys in the Front End
+    * Wiring Surveys Up to Redux
+    * Wiring React to Redux
+    * Rendering a List of Surveys
